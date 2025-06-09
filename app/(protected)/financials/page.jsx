@@ -1,3 +1,5 @@
+// "use client";
+
 import { Suspense } from "react";
 import { getUserAccounts } from "@/actions/dashboard";
 import { getDashboardData } from "@/actions/dashboard";
