@@ -22,6 +22,7 @@ model User {
   transactions  Transaction[]
   accounts      Account[]
   budgets       Budget[]
+  leads   Lead[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
@@ -104,4 +105,65 @@ enum RecurringInterval {
   WEEKLY
   MONTHLY
   YEARLY
+}
+
+enum JourneyStage {
+  LEAD
+  QUOTE
+  PROGRESS
+  COMPLETION
+}
+
+model Lead {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Journey Stage
+  journeyStage     JourneyStage @default(LEAD)
+
+  // --- Lead Stage ---
+  personName       String
+  mobileNo         String
+  emailId          String
+  capacity         String    // Personal / Official
+  address          String
+  pinCode          String
+  state            String
+  country          String
+  designation      String
+  department       String
+  clientType       String
+
+  // --- Quote Stage ---
+  companyName      String?
+  companyContact   String?
+  companyEmail     String?
+  companyWebsite   String?
+  companyAddress   String?
+  companyPinCode   String?
+  companyState     String?
+  companyCountry   String?
+  companyType      String?
+  previouslyWorked Boolean? // Ever worked with
+  companyProfession String?
+
+  // --- Progress Stage ---
+  leadType         String?   // warm, hot, cold
+  enquiryType      String?   // Direct, Reference, Sub Contract, Freelancing
+  projectType      String?
+  leadDate         DateTime?
+  quoteDate        DateTime?
+  action           String?   // quote, not quote, followup
+
+  // --- Completion Stage ---
+  jobMainCategory  String?
+  jobSubCategory   String?
+  leadMessage      String?
+
+  // --- Status ---
+  status           String
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
