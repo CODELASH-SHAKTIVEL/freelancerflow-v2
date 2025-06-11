@@ -22,7 +22,8 @@ model User {
   transactions  Transaction[]
   accounts      Account[]
   budgets       Budget[]
-  leads   Lead[]
+  leads         Lead[]
+  profile       Profile? // 1-to-1 (nullable until a profile is created)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
@@ -166,4 +167,74 @@ model Lead {
 
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+}
+
+// ────────────────────────────────────────────────
+// ENUMS
+// ────────────────────────────────────────────────
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  FREELANCE
+}
+
+model Profile {
+  id         String @id @default(cuid())
+  userId     String @unique
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // ── Personal Section ──────────────────────────
+  primaryMobileNo     String        // required
+  secondaryMobileNo   String?
+  personalEmail       String        // required
+  workEmail           String?
+  address             String
+  pinCode             String
+  state               String
+  gender              Gender
+  dateOfBirth         DateTime?
+
+  // ── Educational Section ───────────────────────
+  // 10th / “X”
+  xInstitution        String?
+  xBoard              String?
+  xPassingYear        Int?
+
+  // 12th / “XII”
+  xiiInstitution      String?
+  xiiBoard            String?
+  xiiPassingYear      Int?
+
+  // Formal Education (Degree / Diploma)
+  formalDegree        String?
+  formalInstitution   String?
+  formalUniversity    String?
+  formalPassingYear   Int?
+
+  // Professional Education (MBA, CA, etc.)
+  professionalCourse      String?
+  professionalInstitution String?
+  professionalUniversity  String?
+  professionalPassingYear Int?
+
+  // Skills / Certifications
+  figmaCertified      Boolean   @default(false)
+  reactJsCertified    Boolean   @default(false)
+
+  // ── Work Section ──────────────────────────────
+  totalExperienceYears Float?     // e.g. 7.5
+  companies           String?     // CSV or semicolon-separated list
+  jobDescriptions     String?     // condensed JDs or Markdown blob
+  freelancingWorks    String?     // brief notes or links
+  employmentType      EmploymentType?
+
+  // ── Meta ──────────────────────────────────────
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

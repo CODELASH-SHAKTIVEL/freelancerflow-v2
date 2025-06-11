@@ -46,12 +46,12 @@ const data = {
       icon:IconDashboard,
     },
     {
-      title: "profile",
+      title: "Profile",
       url: "/profile",
       icon: IconListDetails,
     },
     {
-      title: "leads",
+      title: "Leads",
       url: "/leads",
       icon: IconUsers,
     },
@@ -76,7 +76,7 @@ const data = {
       icon: IconFileAi,
     },
     {
-      title: "files & documents",
+      title: "Files & documents",
       url: "/files",
       icon: IconFileWord,
     },
