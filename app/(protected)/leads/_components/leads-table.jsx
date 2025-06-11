@@ -101,7 +101,7 @@ export function LeadsTable() {
               <Button
                 size="icon"
                 variant="outline"
-                onClick={() => router.push(`/leads/${lead.id}`)}
+                onClick={() => router.push(`/leads/${lead.id}/view`)}
               >
                 <Eye className="h-4 w-4" />
               </Button>
