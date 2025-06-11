@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import MonthView from './MonthView';
 import WeekView from './WeekView';
 import DayView from './DayView';
 import EventModal from './EventModel';
 import { getEvents, saveEvent, deleteEvent } from '@/lib/localStorage';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
-import { updateEventTime } from '@/lib/dateUtils';
+import { updateEventTime, isToday } from '@/lib/dateUtils';
 
 const Calendar = () => {
   const [currentView, setCurrentView] = useState('month');
@@ -83,48 +85,84 @@ const Calendar = () => {
     setCurrentDate(newDate);
   };
 
+  const goToToday = () => {
+    setCurrentDate(new Date());
+  };
+
+  const getDateRangeText = () => {
+    if (currentView === 'month') {
+      return currentDate.toLocaleDateString('en-US', { 
+        month: 'long', 
+        year: 'numeric'
+      });
+    } else if (currentView === 'week') {
+      const startOfWeek = new Date(currentDate);
+      startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      
+      if (startOfWeek.getMonth() === endOfWeek.getMonth()) {
+        return `${startOfWeek.toLocaleDateString('en-US', { month: 'long' })} ${startOfWeek.getDate()}-${endOfWeek.getDate()}, ${startOfWeek.getFullYear()}`;
+      } else {
+        return `${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, ${endOfWeek.getFullYear()}`;
+      }
+    } else {
+      return currentDate.toLocaleDateString('en-US', { 
+        weekday: 'long',
+        month: 'long', 
+        day: 'numeric',
+        year: 'numeric'
+      });
+    }
+  };
+
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div className="min-h-screen bg-background p-4">
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 p-4">
         <div className="max-w-7xl mx-auto">
-          <Card className="p-6">
+          <Card className="p-6 shadow-xl border-0 bg-card/80 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-4">
-                <h1 className="text-3xl font-bold text-foreground">Calendar</h1>
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3">
+                  <CalendarIcon className="w-8 h-8 text-primary" />
+                  <h1 className="text-3xl font-bold text-foreground">Calendar</h1>
+                </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleDateNavigation(-1)}
-                    className="p-2 rounded-md hover:bg-accent transition-colors"
+                    className="p-2 hover:bg-accent transition-colors"
                   >
-                    ←
-                  </button>
-                  <button
-                    onClick={() => setCurrentDate(new Date())}
-                    className="px-4 py-2 text-sm font-medium rounded-md hover:bg-accent transition-colors"
+                    <ChevronLeftIcon className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant={isToday(currentDate) ? "default" : "outline"}
+                    size="sm"
+                    onClick={goToToday}
+                    className="px-4 py-2 text-sm font-medium transition-colors"
                   >
                     Today
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleDateNavigation(1)}
-                    className="p-2 rounded-md hover:bg-accent transition-colors"
+                    className="p-2 hover:bg-accent transition-colors"
                   >
-                    →
-                  </button>
+                    <ChevronRightIcon className="w-4 h-4" />
+                  </Button>
                 </div>
                 <h2 className="text-xl font-semibold text-muted-foreground">
-                  {currentDate.toLocaleDateString('en-US', { 
-                    month: 'long', 
-                    year: 'numeric',
-                    ...(currentView !== 'month' && { day: 'numeric' })
-                  })}
+                  {getDateRangeText()}
                 </h2>
               </div>
               
               <Tabs value={currentView} onValueChange={setCurrentView}>
-                <TabsList className="grid grid-cols-3 w-64">
-                  <TabsTrigger value="month" className="text-sm">Month</TabsTrigger>
-                  <TabsTrigger value="week" className="text-sm">Week</TabsTrigger>
-                  <TabsTrigger value="day" className="text-sm">Day</TabsTrigger>
+                <TabsList className="grid grid-cols-3 w-72 bg-muted/50">
+                  <TabsTrigger value="month" className="text-sm font-medium">Month</TabsTrigger>
+                  <TabsTrigger value="week" className="text-sm font-medium">Week</TabsTrigger>
+                  <TabsTrigger value="day" className="text-sm font-medium">Day</TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>

@@ -7,7 +7,7 @@ const EventTile = ({ event, onClick, compact = false, draggable = false }) => {
     disabled: !draggable
   });
 
-  const style = {
+  const dragStyle = {
     transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
     zIndex: isDragging ? 1000 : undefined,
     opacity: isDragging ? 0.5 : undefined,
@@ -21,15 +21,17 @@ const EventTile = ({ event, onClick, compact = false, draggable = false }) => {
       ref={setNodeRef}
       {...(draggable ? { ...listeners, ...attributes } : {})}
       className={`
-        rounded-md px-2 py-1 text-xs font-medium cursor-pointer
-        transition-all duration-200 hover:opacity-80
+        rounded-lg px-3 py-2 text-xs font-medium cursor-pointer
+        transition-all duration-200 hover:opacity-90 hover:shadow-md
         ${compact ? 'mb-1' : 'absolute inset-x-1 top-1'}
-        ${isDragging ? 'shadow-lg' : ''}
+        ${isDragging ? 'shadow-lg scale-105' : ''}
+        border-l-4 backdrop-blur-sm
       `}
       style={{
         backgroundColor: event.color || '#3b82f6',
         color: '#ffffff',
-        ...style
+        borderLeftColor: event.color ? `${event.color}CC` : '#1e40af',
+        ...dragStyle
       }}
       onClick={(e) => {
         e.stopPropagation();
@@ -37,9 +39,9 @@ const EventTile = ({ event, onClick, compact = false, draggable = false }) => {
       }}
     >
       <div className={`${compact ? 'truncate' : ''}`}>
-        <div className="font-medium">{event.title}</div>
+        <div className="font-semibold text-white drop-shadow-sm">{event.title}</div>
         {!compact && (
-          <div className="text-xs opacity-90">
+          <div className="text-xs opacity-90 mt-1">
             {startTime.toLocaleTimeString('en-US', { 
               hour: 'numeric', 
               minute: '2-digit',

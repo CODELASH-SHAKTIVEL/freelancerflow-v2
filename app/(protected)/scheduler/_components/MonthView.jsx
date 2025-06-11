@@ -1,5 +1,5 @@
 import React from 'react';
-import { getDaysInMonth, isSameDay, formatDate } from '@/lib/dateUtils';
+import { getDaysInMonth, isSameDay, formatDate, isToday, getDateLabel } from '@/lib/dateUtils';
 import EventTile from './EventTile';
 
 const MonthView = ({ currentDate, events, onSlotClick, onEventClick }) => {
@@ -21,12 +21,13 @@ const MonthView = ({ currentDate, events, onSlotClick, onEventClick }) => {
   };
 
   return (
-    <div className="bg-card rounded-lg overflow-hidden border">
+    <div className="bg-card rounded-xl overflow-hidden border shadow-lg">
       {/* Header with day names */}
-      <div className="grid grid-cols-7 bg-muted">
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} className="p-4 text-center font-medium text-muted-foreground border-r last:border-r-0">
-            {day}
+      <div className="grid grid-cols-7 bg-gradient-to-r from-muted/50 to-muted">
+        {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(day => (
+          <div key={day} className="p-4 text-center font-semibold text-muted-foreground border-r last:border-r-0">
+            <div className="hidden sm:block">{day}</div>
+            <div className="sm:hidden">{day.slice(0, 3)}</div>
           </div>
         ))}
       </div>
@@ -35,21 +36,30 @@ const MonthView = ({ currentDate, events, onSlotClick, onEventClick }) => {
       <div className="grid grid-cols-7">
         {daysInMonth.map((day, index) => {
           const dayEvents = getDayEvents(day);
-          const isToday = isSameDay(day, today);
+          const isTodayDate = isToday(day);
           const isCurrentMonth = day.getMonth() === currentDate.getMonth();
 
           return (
             <div
               key={index}
-              className={`min-h-32 p-2 border-r border-b last:border-r-0 cursor-pointer hover:bg-accent/50 transition-colors ${
-                !isCurrentMonth ? 'bg-muted/30 text-muted-foreground' : ''
-              }`}
+              className={`min-h-32 p-3 border-r border-b last:border-r-0 cursor-pointer transition-all duration-200 hover:bg-accent/30 group ${
+                !isCurrentMonth ? 'bg-muted/20 text-muted-foreground' : ''
+              } ${isTodayDate ? 'bg-primary/5 ring-2 ring-primary/20' : ''}`}
               onClick={() => handleDayClick(day)}
             >
-              <div className={`text-sm font-medium mb-1 ${
-                isToday ? 'bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center' : ''
-              }`}>
-                {day.getDate()}
+              <div className="flex items-center justify-between mb-2">
+                <div className={`text-sm font-semibold transition-colors ${
+                  isTodayDate 
+                    ? 'bg-primary text-primary-foreground rounded-full w-7 h-7 flex items-center justify-center shadow-md' 
+                    : 'group-hover:text-primary'
+                }`}>
+                  {day.getDate()}
+                </div>
+                {isTodayDate && (
+                  <div className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
+                    Today
+                  </div>
+                )}
               </div>
               
               <div className="space-y-1">
@@ -62,7 +72,7 @@ const MonthView = ({ currentDate, events, onSlotClick, onEventClick }) => {
                   />
                 ))}
                 {dayEvents.length > 3 && (
-                  <div className="text-xs text-muted-foreground px-1">
+                  <div className="text-xs text-muted-foreground px-2 py-1 bg-accent/50 rounded text-center font-medium">
                     +{dayEvents.length - 3} more
                   </div>
                 )}
