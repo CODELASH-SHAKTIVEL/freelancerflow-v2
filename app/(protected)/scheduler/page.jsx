@@ -1,12 +1,7 @@
-import React from 'react'
+import Calendar from './_components/Calendar';
 
-const page = () => {
-  return (
-    <div>
-      scheduler
-      <p className="text-gray-500">This page is under construction.</p>
-    </div>
-  )
-}
+const Index = () => {
+  return <Calendar />;
+};
 
-export default page
+export default Index;
