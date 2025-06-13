@@ -136,3 +136,21 @@
   }
 }
 
+/* Custom scrollbar for columns */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #94a3b8; /* slate-400 */
+  border-radius: 4px;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 transparent;
+}

@@ -153,18 +153,8 @@ const data = {
   ],
   documents: [
     {
-      name: "Project-1",
-      url: "#",
-      icon: IconFileWord,
-    },
-    {
-      name: "Project-2",
-      url: "#",
-      icon: IconFileWord,
-    },
-    {
-      name: "Project-3",
-      url: "#",
+      name: "My Organization",
+      url: "/onboarding",
       icon: IconFileWord,
     },
   ],
