@@ -179,7 +179,7 @@ export default function PromotionalMaterialsPage() {
       </div>
 
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
-  <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-3xl">
     <DialogTitle className="text-lg font-semibold">Preview</DialogTitle>
     <div className="mt-4">
       {previewUrl.endsWith(".pdf") ? (
