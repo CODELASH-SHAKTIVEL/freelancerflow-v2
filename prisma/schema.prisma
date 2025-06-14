@@ -23,6 +23,7 @@ model User {
   accounts      Account[]
   budgets       Budget[]
   leads         Lead[]
+  PromotionalMaterial PromotionalMaterial[]
   profile       Profile? // 1-to-1 (nullable until a profile is created)
   createdIssues Issue[]   @relation("Reporter")
   assignedIssues Issue[]  @relation("Assignee")
@@ -30,6 +31,19 @@ model User {
   updatedAt     DateTime      @updatedAt
 
   @@map("users")
+}
+
+model PromotionalMaterial {
+  id         String   @id @default(cuid())
+  name       String
+  tag        String
+  type       String
+  previewUrl String
+  date       String
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Account {
@@ -308,3 +322,4 @@ enum IssuePriority {
   HIGH
   URGENT
 }
+
