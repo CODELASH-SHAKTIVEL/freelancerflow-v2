@@ -94,7 +94,7 @@ export async function uploadFileToFolder({ name, url, type, size, folderId }) {
     },
   });
 
-  revalidatePath(`/files/${folder.slug}`);
+  // revalidatePath(`/files/${folder.id}`);
   return file;
 }
 
@@ -106,16 +106,14 @@ export async function getFilesByFolder(folderId) {
 
   const folder = await db.folder.findUnique({
     where: { id: folderId },
+    include: { files: { orderBy: { createdAt: "desc" } } },
   });
 
   if (!folder || folder.userId !== user.id) {
     throw new Error("Unauthorized or folder not found");
   }
 
-  return db.file.findMany({
-    where: { folderId },
-    orderBy: { createdAt: "desc" },
-  });
+  return folder;
 }
 
 /* ❌ Delete File */
@@ -128,7 +126,7 @@ export async function deleteFile(fileId) {
   if (!folder || folder.userId !== user.id) throw new Error("Unauthorized");
 
   await db.file.delete({ where: { id: fileId } });
-  revalidatePath(`/files/${folder.slug}`);
+  // revalidatePath(`/files/${folder.id}`);
 }
 
 /* ✏️ Rename File */
@@ -145,6 +143,6 @@ export async function renameFile(fileId, newName) {
     data: { name: newName },
   });
 
-  revalidatePath(`/files/${folder.slug}`);
+  // revalidatePath(`/files/${folder.id}`);
   return updated;
 }

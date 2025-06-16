@@ -15,6 +15,7 @@ export default function FilesPage() {
     (async () => {
       const data = await getAllFolders();
       setFolders(data);
+      console.log("Fetched folders:", data);
     })();
   }, []);
 
@@ -35,7 +36,7 @@ export default function FilesPage() {
           <FolderCard
             key={folder.id}
             folder={folder}
-            onClick={() => router.push(`/files/${folder.slug}`)}
+            onClick={() => router.push(`/files/${folder.id}`)}
           />
         ))}
       </div>
