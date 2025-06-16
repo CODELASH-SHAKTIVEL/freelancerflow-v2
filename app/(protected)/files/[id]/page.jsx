@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Upload, Eye, Share2 } from "lucide-react";
 
-import { getFolderBySlug, uploadFileToFolder } from "@/actions/files";
+import {getFilesByFolder, uploadFileToFolder } from "@/actions/files";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 
 import FileCard from "../_components/FileCard";
@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 
 export default function FolderDetailPage() {
   const router = useRouter();
-  const { slug } = useParams();
+  const { id } = useParams();
   const [folder, setFolder] = useState(null);
   const [files, setFiles] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
@@ -36,12 +36,13 @@ export default function FolderDetailPage() {
 
   useEffect(() => {
     (async () => {
-      const data = await getFolderBySlug(slug);
+      const data = await getFilesByFolder(id);
+      console.log("Fetched folder data in id format:", data);
       if (!data) return router.push("/files");
       setFolder(data);
       setFiles(data.files);
     })();
-  }, [slug]);
+  }, [id]);
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];

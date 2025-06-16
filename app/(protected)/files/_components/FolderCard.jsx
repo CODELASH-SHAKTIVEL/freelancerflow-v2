@@ -4,16 +4,10 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Folder } from "lucide-react";
 
-export default function FolderCard({ folder }) {
-  const router = useRouter();
-
-  const handleClick = () => {
-    router.push(`/files/${folder.id}`);
-  };
-
+export default function FolderCard({ folder, onClick }) {
   return (
     <Card
-      onClick={handleClick}
+      onClick={onClick}
       className="cursor-pointer hover:shadow-md transition"
     >
       <CardContent className="p-4 flex items-center space-x-3">
@@ -23,3 +17,4 @@ export default function FolderCard({ folder }) {
     </Card>
   );
 }
+
