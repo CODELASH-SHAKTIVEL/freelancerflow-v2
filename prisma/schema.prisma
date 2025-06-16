@@ -27,6 +27,7 @@ model User {
   profile       Profile? // 1-to-1 (nullable until a profile is created)
   createdIssues Issue[]   @relation("Reporter")
   assignedIssues Issue[]  @relation("Assignee")
+  folders       Folder[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
@@ -45,6 +46,29 @@ model PromotionalMaterial {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
+
+model Folder {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  files     File[]
+}
+
+model File {
+  id        String   @id @default(cuid())
+  name      String
+  url       String   // Cloudinary URL
+  type      String   // e.g. PDF, Excel, Image, etc.
+  size      String   // Optional for display
+  folderId  String
+  folder    Folder   @relation(fields: [folderId], references: [id])
+  createdAt DateTime @default(now())
+}
+
 
 model Account {
   id           String        @id @default(uuid())
