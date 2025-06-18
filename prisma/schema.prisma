@@ -28,10 +28,61 @@ model User {
   createdIssues Issue[]   @relation("Reporter")
   assignedIssues Issue[]  @relation("Assignee")
   folders       Folder[]
+  tendersPosted Tender[] @relation("PostedTenders") // if user is admin
+  bids          Bid[]    // if user is bidder
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
   @@map("users")
+}
+
+model Tender {
+  id              String    @id @default(uuid())
+  title           String
+  description     String
+  rfqDate         DateTime  @default(now())
+  deadline        DateTime
+  typeOfWork      String
+  skillsRequired  String
+  jobDetails      String
+  documentsUrl    String?   // reference documents (optional)
+
+  // Created by a user (admin)
+  createdById     String
+  createdBy       User      @relation("PostedTenders", fields: [createdById], references: [id])
+
+  // One tender can have many bids
+  bids            Bid[]
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Bid {
+  id               String     @id @default(uuid())
+  bidderId         String
+  bidder           User       @relation(fields: [bidderId], references: [id])
+
+  tenderId         String
+  tender           Tender     @relation(fields: [tenderId], references: [id])
+
+  bidAmount        Float
+  bidDate          DateTime   @default(now())
+  pitchDeckUrl     String?    // uploaded PDF URL
+
+  status           BidStatus  @default(SUBMITTED)
+  reasonNotBidding String?
+
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+enum BidStatus {
+  SUBMITTED
+  NOT_BID
+  REJECTED
+  ACCEPTED
+  UNDER_REVIEW
 }
 
 model PromotionalMaterial {
