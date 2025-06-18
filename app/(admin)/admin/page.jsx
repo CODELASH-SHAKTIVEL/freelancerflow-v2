@@ -1,12 +1,7 @@
-import React from 'react'
-
-const page = () => {
+export default function AdminHomePage() {
   return (
-    <div>
-      These is the admin page. Only accessible by admins.
-      <br />
+    <div className="text-lg font-semibold">
+      Welcome to the Admin Dashboard!
     </div>
-  )
+  );
 }
-
-export default page

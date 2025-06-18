@@ -209,21 +209,6 @@ model Lead {
   updatedAt        DateTime @updatedAt
 }
 
-// ────────────────────────────────────────────────
-// ENUMS
-// ────────────────────────────────────────────────
-enum Gender {
-  MALE
-  FEMALE
-  OTHER
-}
-
-enum EmploymentType {
-  FULL_TIME
-  PART_TIME
-  FREELANCE
-}
-
 model Profile {
   id         String @id @default(cuid())
   userId     String @unique
@@ -304,6 +289,21 @@ model Sprint {
   issues    Issue[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ────────────────────────────────────────────────
+// ENUMS  
+// ────────────────────────────────────────────────
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  FREELANCE
 }
 
 model Issue {
