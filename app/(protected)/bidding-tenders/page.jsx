@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
   TableHeader,
+  TableBody,
   TableRow,
+  TableHead,
+  TableCell,
 } from "@/components/ui/table";
 import {
   Dialog,
@@ -15,121 +15,198 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { UploadCloud } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
 
+import { getAllTenders } from "@/actions/tender";
+import { getUserBids, submitBid } from "@/actions/bid";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
-const dummyTenders = [
-  {
-    id: "1",
-    title: "Social Media Campaign for SaaS Product",
-    description: "Run a 3-month Twitter + LinkedIn campaign with paid ads.",
-    deadline: "2025-06-10",
-    postedOn: "2025-06-01",
-  },
-  {
-    id: "2",
-    title: "UI/UX Redesign for E-commerce",
-    description: "Redesign web and mobile versions of an online store.",
-    deadline: "2025-06-14",
-    postedOn: "2025-06-03",
-  },
-];
-
-export default function BiddingTendersPage() {
+export default function UserBidsPage() {
+  const [tenders, setTenders] = useState([]);
+  const [bids, setBids] = useState([]);
   const [selectedTender, setSelectedTender] = useState(null);
-  const [bidPrice, setBidPrice] = useState("");
-  const [pitchFile, setPitchFile] = useState(null);
+  const [infoTender, setInfoTender] = useState(null);
+  const [bidAmount, setBidAmount] = useState("");
+  const [pitchDeck, setPitchDeck] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleBidSubmit = () => {
-    // Placeholder for actual submit logic
-    console.log({
-      tenderId: selectedTender?.id,
-      price: bidPrice,
-      pitch: pitchFile,
-    });
-    setSelectedTender(null);
-    setBidPrice("");
-    setPitchFile(null);
+  useEffect(() => {
+    async function fetchData() {
+      const allTenders = await getAllTenders();
+      const userBids = await getUserBids();
+      setTenders(allTenders);
+      setBids(userBids);
+    }
+    fetchData();
+  }, []);
+
+  const hasBid = (tenderId) => bids.some((bid) => bid.tenderId === tenderId);
+
+  const handleSubmit = async () => {
+    if (!pitchDeck || !bidAmount || !selectedTender) return;
+    setSubmitting(true);
+    try {
+      await submitBid({
+        tenderId: selectedTender.id,
+        bidAmount: parseFloat(bidAmount),
+        pitchDeckUrl: pitchDeck,
+      });
+
+      const updated = await getUserBids();
+      setBids(updated);
+
+      setSelectedTender(null);
+      setBidAmount("");
+      setPitchDeck(null);
+    } catch (error) {
+      console.error("Bid submission failed", error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Bidding & Tenders</h2>
-      </div>
+      <h2 className="text-2xl font-semibold">Available Tenders</h2>
 
-      <div className="border rounded-md overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Deadline</TableHead>
-              <TableHead>Posted On</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {dummyTenders.map((tender) => (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Title</TableHead>
+            <TableHead>Deadline</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {tenders.map((tender) => {
+            const isSubmitted = hasBid(tender.id);
+            const isPastDeadline = tender?.deadline ? new Date(tender.deadline) < new Date() : false;
+
+            return (
               <TableRow key={tender.id}>
                 <TableCell className="font-medium">{tender.title}</TableCell>
-                <TableCell className="max-w-sm truncate text-muted-foreground">
-                  {tender.description}
+                <TableCell>
+                  {tender?.deadline ? format(new Date(tender.deadline), "PPP") : "N/A"}
                 </TableCell>
-                <TableCell>{tender.deadline}</TableCell>
-                <TableCell>{tender.postedOn}</TableCell>
-                <TableCell className="text-right">
+                <TableCell>
+                  <Badge variant={isPastDeadline ? "destructive" : "default"}>
+                    {isPastDeadline ? "Closed" : "Open"}
+                  </Badge>
+                </TableCell>
+                <TableCell className="flex justify-end gap-2">
+                  {/* Info Button */}
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button
                         size="sm"
-                        variant="default"
-                        onClick={() => setSelectedTender(tender)}
+                        variant="outline"
+                        onClick={() => setInfoTender(tender)}
                       >
-                        Submit Bid
+                        Info
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
-                      <DialogTitle>Submit Bid</DialogTitle>
-                      <div className="space-y-4 mt-4">
-                        <div>
-                          <Label>Pitch Deck (PDF)</Label>
-                          <Input
-                            type="file"
-                            accept=".pdf"
-                            onChange={(e) =>
-                              setPitchFile(e.target.files?.[0] ?? null)
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label>Bid Price (INR)</Label>
-                          <Input
-                            type="number"
-                            placeholder="Enter your bid amount"
-                            value={bidPrice}
-                            onChange={(e) => setBidPrice(e.target.value)}
-                          />
-                        </div>
-                        <Button
-                          onClick={handleBidSubmit}
-                          disabled={!bidPrice || !pitchFile}
-                        >
-                          <UploadCloud className="w-4 h-4 mr-2" />
-                          Submit Bid
-                        </Button>
+                      <DialogTitle>{infoTender?.title}</DialogTitle>
+                      <div className="space-y-3 mt-4 text-sm">
+                        <p><strong>Description:</strong> {infoTender?.description || "N/A"}</p>
+                        <p><strong>Type of Work:</strong> {infoTender?.typeOfWork || "N/A"}</p>
+                        <p><strong>Skills Required:</strong> {infoTender?.skillsRequired || "N/A"}</p>
+                        <p><strong>Job Details:</strong> {infoTender?.jobDetails || "N/A"}</p>
+                        <p>
+                          <strong>RFQ Date:</strong>{" "}
+                          {infoTender?.rfqDate ? format(new Date(infoTender.rfqDate), "PPP") : "N/A"}
+                        </p>
+                        <p>
+                          <strong>Deadline:</strong>{" "}
+                          {infoTender?.deadline ? format(new Date(infoTender.deadline), "PPP") : "N/A"}
+                        </p>
+                        {infoTender?.documentsUrl && (
+                          <p>
+                            <a
+                              href={infoTender.documentsUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline"
+                            >
+                              Download Document
+                            </a>
+                          </p>
+                        )}
                       </div>
                     </DialogContent>
                   </Dialog>
+
+                  {/* Submit Bid Button */}
+                  {!isSubmitted && !isPastDeadline && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setSelectedTender(tender);
+                            setBidAmount("");
+                            setPitchDeck(null);
+                          }}
+                        >
+                          Submit Bid
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogTitle>Submit Bid for {tender.title}</DialogTitle>
+                        <div className="space-y-4 mt-4">
+                          <div>
+                            <Label>Pitch Deck (PDF)</Label>
+                            <Input
+                              type="file"
+                              accept=".pdf"
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                setUploading(true);
+                                try {
+                                  const data = await uploadToCloudinary(file);
+                                  setPitchDeck(data.secure_url);
+                                } catch (err) {
+                                  console.error("Upload failed", err);
+                                } finally {
+                                  setUploading(false);
+                                }
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <Label>Bid Amount (INR)</Label>
+                            <Input
+                              type="number"
+                              value={bidAmount}
+                              onChange={(e) => setBidAmount(e.target.value)}
+                              placeholder="Enter your bid amount"
+                            />
+                          </div>
+                          <Button
+                            onClick={handleSubmit}
+                            disabled={!bidAmount || !pitchDeck || submitting}
+                          >
+                            {submitting ? "Submitting..." : "Submit Bid"}
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  )}
+
+                  {isSubmitted && <Badge variant="outline">Submitted</Badge>}
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            );
+          })}
+        </TableBody>
+      </Table>
     </div>
   );
 }

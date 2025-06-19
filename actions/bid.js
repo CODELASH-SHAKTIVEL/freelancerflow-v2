@@ -24,7 +24,7 @@ export async function submitBid({ tenderId, bidAmount, pitchDeckUrl }) {
     data: {
       tenderId,
       bidderId: user.id,
-      bidAmount,
+      bidAmount: parseFloat(bidAmount),
       pitchDeckUrl,
       status: "SUBMITTED",
     },
