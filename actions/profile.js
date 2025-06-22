@@ -37,14 +37,10 @@ export async function createProfile(data) {
     data: {
       ...rest,
       userId: user.id,
+      professionId, // ✅ This replaces the invalid `profession.connect`
       professionalTools: toolIds?.length
         ? {
             connect: toolIds.map((id) => ({ id })),
-          }
-        : undefined,
-      profession: professionId
-        ? {
-            connect: { id: professionId },
           }
         : undefined,
     },
