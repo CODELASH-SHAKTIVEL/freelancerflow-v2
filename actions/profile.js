@@ -31,18 +31,20 @@ export async function createProfile(data) {
   const existing = await db.profile.findUnique({ where: { userId: user.id } });
   if (existing) throw new Error("Profile already exists. Use updateProfile.");
 
+  const { toolIds, professionId, ...rest } = data;
+
   const profile = await db.profile.create({
     data: {
-      ...data,
+      ...rest,
       userId: user.id,
-      professionalTools: data.toolIds
+      professionalTools: toolIds?.length
         ? {
-            connect: data.toolIds.map((id) => ({ id })),
+            connect: toolIds.map((id) => ({ id })),
           }
         : undefined,
-      profession: data.professionId
+      profession: professionId
         ? {
-            connect: { id: data.professionId },
+            connect: { id: professionId },
           }
         : undefined,
     },
@@ -51,6 +53,7 @@ export async function createProfile(data) {
   revalidatePath("/profile");
   return { success: true, data: profile };
 }
+
 
 /**
  * Get the current user's profile.
