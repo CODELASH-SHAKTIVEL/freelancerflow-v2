@@ -412,9 +412,6 @@ model Profile {
   profession          Profession?   @relation(fields: [professionId], references: [id])
   professionalTools   Tool[]        @relation("ProfileTools")
 
-  figmaCertified      Boolean       @default(false)
-  reactJsCertified    Boolean       @default(false)
-
   // ── Work Section ──────────────────────────────
   totalExperienceYears Float?
   companies           String?
@@ -422,18 +419,18 @@ model Profile {
   freelancingWorks    String?
   employmentType      EmploymentType?
 
-  // ── Promotional Tools ─────────────────────────
-  resumes             String[]
-  cvs                 String[]
-  portfolios          String[]
-  presentations       String[]
-  proposals           String[]
-  rateCards           String[]
-  catalogues          String[]
-  banners             String[]
-  visitingCards       String[]
-  certificates        String[]
-  awards              String[]
+  // // ── Promotional Tools ─────────────────────────
+  // resumes             String[]
+  // cvs                 String[]
+  // portfolios          String[]
+  // presentations       String[]
+  // proposals           String[]
+  // rateCards           String[]
+  // catalogues          String[]
+  // banners             String[]
+  // visitingCards       String[]
+  // certificates        String[]
+  // awards              String[]
 
   // ── Meta ──────────────────────────────────────
   createdAt           DateTime      @default(now())
