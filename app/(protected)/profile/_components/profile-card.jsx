@@ -3,7 +3,29 @@
 import React, { useEffect, useState } from "react";
 import { getProfile } from "@/actions/profile";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Phone,
+  Mail,
+  Globe,
+  MapPin,
+  Landmark,
+  GraduationCap,
+  User,
+  Calendar,
+  Wrench,
+  Briefcase,
+  Building,
+  BadgeCheck,
+  BookOpen,
+  FileText,
+  Hammer,
+  Laptop2,
+  Award,
+  Loader2,
+  Paperclip,
+} from "lucide-react";
 
 export const ProfileCard = () => {
   const [profile, setProfile] = useState(null);
@@ -41,75 +63,167 @@ export const ProfileCard = () => {
   }
 
   const {
+    name,
     primaryMobileNo,
     secondaryMobileNo,
     personalEmail,
     workEmail,
+    website,
     address,
     pinCode,
     state,
     gender,
     dateOfBirth,
     xInstitution,
+    xBoard,
+    xPassingYear,
     xiiInstitution,
+    xiiBoard,
+    xiiPassingYear,
     formalDegree,
+    formalInstitution,
+    formalUniversity,
+    formalPassingYear,
     professionalCourse,
-    figmaCertified,
-    reactJsCertified,
+    professionalInstitution,
+    professionalUniversity,
+    professionalPassingYear,
     totalExperienceYears,
     companies,
     jobDescriptions,
     freelancingWorks,
     employmentType,
+    profession,
+    professionalTools,
+    resumes,
+    cvs,
+    portfolios,
+    presentations,
+    proposals,
+    rateCards,
+    catalogues,
+    banners,
+    visitingCards,
+    certificatesOfAppreciation,
+    awards,
+    experienceCertificates,
+    internshipCertificates,
   } = profile;
 
+  const renderAttachments = (title, files) => {
+    if (!files || files.length === 0) return null;
+    return (
+      <div className="space-y-1">
+        <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
+          <Paperclip className="w-4 h-4" />
+          {title}
+        </h4>
+        <ul className="list-disc list-inside text-sm">
+          {files.map((file, i) => (
+            <li key={i}>
+              <a
+                href={file.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline hover:text-primary/80"
+              >
+                {file.name || `Attachment ${i + 1}`}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
   return (
-    <Card className="w-full">
-      <CardContent className="p-6 space-y-6">
-        {/* Personal Info */}
-        <section>
-          <h2 className="text-lg font-semibold mb-2">Personal Information</h2>
-          <ul className="space-y-1 text-sm">
-            <li><strong>Primary Mobile:</strong> {primaryMobileNo}</li>
-            {secondaryMobileNo && <li><strong>Secondary Mobile:</strong> {secondaryMobileNo}</li>}
-            <li><strong>Personal Email:</strong> {personalEmail}</li>
-            {workEmail && <li><strong>Work Email:</strong> {workEmail}</li>}
-            <li><strong>Address:</strong> {address}, {state} - {pinCode}</li>
-            <li><strong>Gender:</strong> {gender}</li>
-           <li><strong>Date of Birth:</strong> {dateOfBirth ? new Date(dateOfBirth).toISOString().split("T")[0] : "-"}</li>
+    <Card className="w-full shadow-sm border border-border bg-background text-foreground">
+      <CardContent className="p-6 space-y-6 text-sm">
+        <div className="flex items-center gap-3">
+          <User className="w-6 h-6" />
+          <h2 className="text-xl font-semibold">{name}</h2>
+        </div>
+
+        <section className="space-y-2">
+          <h3 className="flex items-center gap-2 font-medium">
+            <Landmark className="w-4 h-4" /> Personal Information
+          </h3>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <li className="flex items-center gap-2"><Phone className="w-4 h-4" /> {primaryMobileNo}</li>
+            {secondaryMobileNo && <li className="flex items-center gap-2"><Phone className="w-4 h-4" /> {secondaryMobileNo}</li>}
+            <li className="flex items-center gap-2"><Mail className="w-4 h-4" /> {personalEmail}</li>
+            {workEmail && <li className="flex items-center gap-2"><Mail className="w-4 h-4" /> {workEmail}</li>}
+            {website && <li className="flex items-center gap-2"><Globe className="w-4 h-4" /> {website}</li>}
+            <li className="flex items-center gap-2 col-span-2"><MapPin className="w-4 h-4" /> {address}, {state} - {pinCode}</li>
+            <li className="flex items-center gap-2"><User className="w-4 h-4" /> {gender}</li>
+            <li className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {dateOfBirth ? new Date(dateOfBirth).toLocaleDateString() : "-"}</li>
           </ul>
         </section>
 
-        {/* Education Info */}
-        <section>
-          <h2 className="text-lg font-semibold mb-2">Education</h2>
-          <ul className="space-y-1 text-sm">
-            <li><strong>10th:</strong> {xInstitution}</li>
-            <li><strong>12th:</strong> {xiiInstitution}</li>
-            <li><strong>Formal Degree:</strong> {formalDegree}</li>
-            <li><strong>Professional Course:</strong> {professionalCourse}</li>
+        <section className="space-y-2">
+          <h3 className="flex items-center gap-2 font-medium">
+            <GraduationCap className="w-4 h-4" /> Education
+          </h3>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <li><strong>10th:</strong> {xInstitution} ({xBoard}, {xPassingYear})</li>
+            <li><strong>12th:</strong> {xiiInstitution} ({xiiBoard}, {xiiPassingYear})</li>
+            <li><strong>Formal:</strong> {formalDegree} at {formalInstitution} ({formalUniversity}, {formalPassingYear})</li>
+            <li><strong>Professional:</strong> {professionalCourse} at {professionalInstitution} ({professionalUniversity}, {professionalPassingYear})</li>
           </ul>
         </section>
 
-        {/* Certifications */}
-        <section>
-          <h2 className="text-lg font-semibold mb-2">Certifications</h2>
-          <ul className="space-y-1 text-sm">
-            <li><strong>Figma Certified:</strong> {figmaCertified ? "Yes" : "No"}</li>
-            <li><strong>ReactJS Certified:</strong> {reactJsCertified ? "Yes" : "No"}</li>
-          </ul>
+        <section className="space-y-2">
+          <h3 className="flex items-center gap-2 font-medium">
+            <Hammer className="w-4 h-4" /> Profession & Tools
+          </h3>
+          <p className="flex items-center gap-2">
+            <Briefcase className="w-4 h-4" /> <strong>Profession:</strong> {profession?.name ?? "-"}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {professionalTools?.length > 0 ? (
+              professionalTools.map((tool) => (
+                <Badge key={tool.id} variant="secondary" className="text-xs">
+                  <Wrench className="w-3 h-3 mr-1" /> {tool.name}
+                </Badge>
+              ))
+            ) : (
+              <span className="text-muted-foreground">No tools listed</span>
+            )}
+          </div>
         </section>
 
-        {/* Work Info */}
-        <section>
-          <h2 className="text-lg font-semibold mb-2">Work Experience</h2>
-          <ul className="space-y-1 text-sm">
+        <section className="space-y-2">
+          <h3 className="flex items-center gap-2 font-medium">
+            <Laptop2 className="w-4 h-4" /> Work Experience
+          </h3>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <li><strong>Total Experience:</strong> {totalExperienceYears ?? "-"} years</li>
             <li><strong>Employment Type:</strong> {employmentType ?? "-"}</li>
             <li><strong>Companies:</strong> {companies ?? "-"}</li>
-            <li><strong>Freelancing:</strong> {freelancingWorks ?? "-"}</li>
-            <li><strong>Job Descriptions:</strong> {jobDescriptions ?? "-"}</li>
+            <li><strong>Freelancing Works:</strong> {freelancingWorks ?? "-"}</li>
+            <li className="md:col-span-2"><strong>Job Descriptions:</strong><br />{jobDescriptions ?? "-"}</li>
           </ul>
+        </section>
+
+        <section className="space-y-4">
+          <h3 className="flex items-center gap-2 font-medium">
+            <FileText className="w-4 h-4" /> Attachments
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {renderAttachments("Resumes", resumes)}
+            {renderAttachments("CVs", cvs)}
+            {renderAttachments("Portfolios", portfolios)}
+            {renderAttachments("Presentations", presentations)}
+            {renderAttachments("Proposals", proposals)}
+            {renderAttachments("Rate Cards", rateCards)}
+            {renderAttachments("Catalogues", catalogues)}
+            {renderAttachments("Banners", banners)}
+            {renderAttachments("Visiting Cards", visitingCards)}
+            {renderAttachments("Certificates of Appreciation", certificatesOfAppreciation)}
+            {renderAttachments("Awards & Recognitions", awards)}
+            {renderAttachments("Experience Certificates", experienceCertificates)}
+            {renderAttachments("Internship Certificates", internshipCertificates)}
+          </div>
         </section>
       </CardContent>
     </Card>

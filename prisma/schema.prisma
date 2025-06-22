@@ -30,11 +30,60 @@ model User {
   folders       Folder[]
   tendersPosted Tender[] @relation("PostedTenders") // if user is admin
   bids          Bid[]    // if user is bidder
+  invoices  Invoice[] // One-to-many
+  receipts  Receipt[] // One-to-many
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
   @@map("users")
 }
+
+model Invoice {
+  id              String   @id @default(uuid())
+  invoiceNumber   String
+  projectId       String?
+  jobId           String?
+  clientId        String
+  clientName      String
+  clientCompany   Json
+  freelancer      Json
+  dateOfInvoice   DateTime
+  payableByDate   DateTime
+  jobDetails      Json       // Array of jobs: topic, rate, quantity, gst, discount, amount
+  terms           String?
+  total           Float
+  modeOfPayment   String
+  typeOfPayment   String
+
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Receipt {
+  id              String   @id @default(uuid())
+  receiptNumber   String
+  coworkerId      String
+  coworkerName    String
+  projectName     String
+  jobName         String
+  projectCost     Float
+  tdsDeductions   Float
+  paidAmount      Float
+  balanceAmount   Float
+  paidDate        DateTime
+  paymentDetails  String?
+
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+
 
 model Tender {
   id              String    @id @default(uuid())
@@ -206,28 +255,86 @@ enum JourneyStage {
   COMPLETION
 }
 
+enum LeadSource {
+  FACEBOOK
+  INSTAGRAM
+  LINKEDIN
+  GMB
+  WEBSITE
+  REPEAT
+  REFERENCE
+}
+
+enum ReferenceForLead {
+  CAMPAIGN
+  BLOG
+  POST
+  OFFER
+  SCHEMES
+  DISCOUNTS
+  EXHIBITIONS
+  DISCOUNT_COUPON
+}
+
+enum TypeOfLead {
+  JOB
+  MARKETING
+  VENDOR
+  DIGITAL_MARKETING
+  JOB_ENQUIRY
+  BUSINESS_ENQUIRY
+  CORE_SERVICES_RELEVANT
+  CORE_SERVICES_IRRELEVANT
+}
+
+enum LeadDetails {
+  WARM
+  HOT
+  COLD
+}
+
+enum EnquiryType {
+  NEW
+  REPEAT
+}
+
+enum ActionOnLead {
+  QUOTE
+  NOT_QUOTE
+  FOLLOWUP
+}
+
+enum LeadStatus {
+  NEW_LEAD
+  FOLLOWUP
+  CLOSED
+  LAPSED
+  SUSPENDED
+  POSTPONED
+}
+
 model Lead {
-  id               String   @id @default(cuid())
+  id               String         @id @default(cuid())
   userId           String
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Journey Stage
-  journeyStage     JourneyStage @default(LEAD)
+  journeyStage     JourneyStage   @default(LEAD)
 
-  // --- Lead Stage ---
-  personName       String
-  mobileNo         String
-  emailId          String
-  capacity         String    // Personal / Official
-  address          String
-  pinCode          String
-  state            String
-  country          String
-  designation      String
-  department       String
-  clientType       String
+  // Client Info
+  personName       String?
+  mobileNo         String?
+  emailId          String?
+  capacity         String?        // Personal / Official
+  address          String?
+  pinCode          String?
+  state            String?
+  country          String?
+  designation      String?
+  department       String?
+  clientType       String?
 
-  // --- Quote Stage ---
+  // Company Info
   companyName      String?
   companyContact   String?
   companyEmail     String?
@@ -237,82 +344,116 @@ model Lead {
   companyState     String?
   companyCountry   String?
   companyType      String?
-  previouslyWorked Boolean? // Ever worked with
+  previouslyWorked Boolean?
   companyProfession String?
 
-  // --- Progress Stage ---
-  leadType         String?   // warm, hot, cold
-  enquiryType      String?   // Direct, Reference, Sub Contract, Freelancing
-  projectType      String?
+  // Lead Source Info
+  leadSource       LeadSource?
+  referenceForLead ReferenceForLead?
+
+  // Lead Details
+  typeOfLead       TypeOfLead?
+  leadDetails      LeadDetails?
+  enquiryType      EnquiryType?
+  action           ActionOnLead?
+  status           LeadStatus?
+
   leadDate         DateTime?
   quoteDate        DateTime?
-  action           String?   // quote, not quote, followup
 
-  // --- Completion Stage ---
+  // Optional Info
   jobMainCategory  String?
   jobSubCategory   String?
   leadMessage      String?
 
-  // --- Status ---
-  status           String
-
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 }
 
 model Profile {
-  id         String @id @default(cuid())
-  userId     String @unique
-  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                  String     @id @default(cuid())
+  userId              String     @unique
+  user                User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // ── Personal Section ──────────────────────────
-  primaryMobileNo     String        // required
+  name                String
+  primaryMobileNo     String
   secondaryMobileNo   String?
-  personalEmail       String        // required
+  personalEmail       String
   workEmail           String?
-  address             String
-  pinCode             String
-  state               String
+  website             String?
+  address             String?
+  pinCode             String?
+  state               String?
   gender              Gender
   dateOfBirth         DateTime?
 
   // ── Educational Section ───────────────────────
-  // 10th / “X”
   xInstitution        String?
   xBoard              String?
   xPassingYear        Int?
 
-  // 12th / “XII”
   xiiInstitution      String?
   xiiBoard            String?
   xiiPassingYear      Int?
 
-  // Formal Education (Degree / Diploma)
   formalDegree        String?
   formalInstitution   String?
   formalUniversity    String?
   formalPassingYear   Int?
 
-  // Professional Education (MBA, CA, etc.)
   professionalCourse      String?
   professionalInstitution String?
   professionalUniversity  String?
   professionalPassingYear Int?
 
-  // Skills / Certifications
-  figmaCertified      Boolean   @default(false)
-  reactJsCertified    Boolean   @default(false)
+  // ── Profession / Tools ────────────────────────
+  professionId        String?
+  profession          Profession?   @relation(fields: [professionId], references: [id])
+  professionalTools   Tool[]        @relation("ProfileTools")
+
+  figmaCertified      Boolean       @default(false)
+  reactJsCertified    Boolean       @default(false)
 
   // ── Work Section ──────────────────────────────
-  totalExperienceYears Float?     // e.g. 7.5
-  companies           String?     // CSV or semicolon-separated list
-  jobDescriptions     String?     // condensed JDs or Markdown blob
-  freelancingWorks    String?     // brief notes or links
+  totalExperienceYears Float?
+  companies           String?
+  jobDescriptions     String?
+  freelancingWorks    String?
   employmentType      EmploymentType?
 
+  // ── Promotional Tools ─────────────────────────
+  resumes             String[]
+  cvs                 String[]
+  portfolios          String[]
+  presentations       String[]
+  proposals           String[]
+  rateCards           String[]
+  catalogues          String[]
+  banners             String[]
+  visitingCards       String[]
+  certificates        String[]
+  awards              String[]
+
   // ── Meta ──────────────────────────────────────
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+}
+
+model Profession {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  profiles    Profile[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Tool {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  profiles    Profile[]  @relation("ProfileTools")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Project {

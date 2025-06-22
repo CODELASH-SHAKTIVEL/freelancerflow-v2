@@ -2,7 +2,7 @@
 
 // "use client";
 import React from "react";
-import { QuickLeadForm } from "../_components/leads-form"; // path may vary
+import { LeadForm } from "../_components/leads-form"; // path may vary
 export default async function CreateLeadPage({ searchParams }) {
   return (
     <div className="max-w-4xl mx-auto px-5">
@@ -11,7 +11,7 @@ export default async function CreateLeadPage({ searchParams }) {
            Create Lead
         </h1>
       </div>
-      <QuickLeadForm/>
+      <LeadForm/>
     </div>
   );
 }

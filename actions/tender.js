@@ -16,7 +16,7 @@ async function getCurrentAppUser() {
   return user;
 }
 
-// Create a tender (admin only)
+// Create a tender (admin or user)
 export async function createTender({
   title,
   description,
@@ -51,6 +51,15 @@ export async function getAllTenders() {
   });
 }
 
+// Get tenders created by the current user
+export async function getUserTenders() {
+  const user = await getCurrentAppUser();
+  return await db.tender.findMany({
+    where: { createdById: user.id },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
 // Get tender by ID including bids
 export async function getTenderById(id) {
   return await db.tender.findUnique({
@@ -65,7 +74,7 @@ export async function getTenderById(id) {
   });
 }
 
-// Update a tender (admin only)
+// Update a tender (admin or user)
 export async function updateTender(tenderId, data) {
   const user = await getCurrentAppUser();
 
@@ -83,7 +92,7 @@ export async function updateTender(tenderId, data) {
   });
 }
 
-// Get bids for a tender (admin only)
+// Get bids for a tender (admin or user)
 export async function getTenderBids(tenderId) {
   const user = await getCurrentAppUser();
 

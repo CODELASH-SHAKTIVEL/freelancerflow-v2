@@ -1,4 +1,3 @@
-// app/actions/leads.js
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
@@ -19,12 +18,56 @@ async function getCurrentAppUser() {
 /* ───────────────────────── actions ───────────────────────── */
 export async function createLead(data) {
   const user = await getCurrentAppUser();
+  if (!user) throw new Error("Unauthorized");
 
   const lead = await db.lead.create({
     data: {
-      ...data,
-      userId: user.id,        // ✅ satisfies the required relation
-      status: data.status ?? "LEAD",
+      userId: user.id,
+
+      // Enums & status
+      journeyStage: data.journeyStage || "LEAD",
+      leadSource: data.leadSource || null,
+      referenceForLead: data.referenceForLead || null,
+      typeOfLead: data.typeOfLead || null,
+      leadDetails: data.leadDetails || null,
+      enquiryType: data.enquiryType || null,
+      action: data.action || null,
+      status: data.status || "NEW_LEAD",
+
+      // Dates
+      leadDate: data.leadDate ? new Date(data.leadDate) : null,
+      quoteDate: data.quoteDate ? new Date(data.quoteDate) : null,
+
+      // Client Info
+      personName: data.personName || null,
+      mobileNo: data.mobileNo || null,
+      emailId: data.emailId || null,
+      capacity: data.capacity || null,
+      address: data.address || "Not Provided",
+      pinCode: data.pinCode || null,
+      state: data.state || null,
+      country: data.country || null,
+      designation: data.designation || null,
+      department: data.department || null,
+      clientType: data.clientType || null,
+
+      // Company Info
+      companyName: data.companyName || null,
+      companyContact: data.companyContact || null,
+      companyEmail: data.companyEmail || null,
+      companyWebsite: data.companyWebsite || null,
+      companyAddress: data.companyAddress || null,
+      companyPinCode: data.companyPinCode || null,
+      companyState: data.companyState || null,
+      companyCountry: data.companyCountry || null,
+      companyType: data.companyType || null,
+      previouslyWorked: data.previouslyWorked ?? false,
+      companyProfession: data.companyProfession || null,
+
+      // Optional Info
+      jobMainCategory: data.jobMainCategory || null,
+      jobSubCategory: data.jobSubCategory || null,
+      leadMessage: data.leadMessage || null,
     },
   });
 
@@ -36,22 +79,32 @@ export async function getLead(id) {
   const user = await getCurrentAppUser();
 
   const lead = await db.lead.findUnique({
-    where: { id, userId: user.id },
+    where: { id },
   });
 
-  if (!lead) throw new Error("Lead not found");
+  if (!lead || lead.userId !== user.id) throw new Error("Lead not found");
   return lead;
 }
 
 export async function updateLead(id, data) {
   const user = await getCurrentAppUser();
 
-  // Make sure the lead belongs to this user
-  await getLead(id);
+  const lead = await getLead(id);
+
+  const {
+    userId, id: _, createdAt, updatedAt, // discard immutable fields
+    leadDate,
+    quoteDate,
+    ...safeData
+  } = data;
 
   const updated = await db.lead.update({
     where: { id },
-    data,
+    data: {
+      ...safeData,
+      leadDate: leadDate === undefined ? lead.leadDate : leadDate ? new Date(leadDate) : null,
+      quoteDate: quoteDate === undefined ? lead.quoteDate : quoteDate ? new Date(quoteDate) : null,
+    },
   });
 
   revalidatePath(`/leads/${id}`);
@@ -61,7 +114,7 @@ export async function updateLead(id, data) {
 export async function deleteLead(id) {
   const user = await getCurrentAppUser();
 
-  // Make sure the lead belongs to this user
+  // Ensure lead exists and belongs to the current user
   await getLead(id);
 
   await db.lead.delete({ where: { id } });

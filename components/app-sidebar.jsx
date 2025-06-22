@@ -81,8 +81,13 @@ const data = {
       icon: IconFileWord,
     },
     {
-      title: "Bidding & Tenders",
+      title: "Bids",
       url: "/bidding-tenders",
+      icon: IconFileDescription,
+    },
+    {
+      title: "Tenders",
+      url: "/tenders",
       icon: IconFileDescription,
     },
     {
