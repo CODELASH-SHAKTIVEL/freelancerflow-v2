@@ -6,6 +6,14 @@ import {
   CardTitle,
   CardContent,
 } from "@/components/ui/card";
+import {
+  Users,
+  Building2,
+  Megaphone,
+  FolderKanban,
+  CheckCircle2,
+  CalendarClock,
+} from "lucide-react";
 
 /* ---------- Server Component ---------- */
 export default async function LeadViewPage({ params }) {
@@ -13,13 +21,14 @@ export default async function LeadViewPage({ params }) {
   if (!lead) notFound();
 
   return (
-    <section className="flex flex-col gap-8 p-6 max-w-screen-xl mx-auto text-sm text-zinc-800 dark:text-zinc-100">
-      <h1 className="text-3xl font-bold text-primary dark:text-primary-foreground tracking-tight">
-        🧾 Lead Details
+    <section className="w-full px-4 md:px-6 py-8 space-y-8 text-sm text-zinc-800 dark:text-zinc-100">
+      <h1 className="text-3xl font-bold text-primary dark:text-white-100 flex items-center gap-2">
+        <Users className="h-6 w-6" />
+        Lead Details
       </h1>
 
-      {/* Person / Contact */}
-      <LeadSection title="👤 Person & Contact Info">
+      {/* Contact Person Info */}
+      <LeadSection icon={<Users className="h-4 w-4" />} title="Person & Contact Info">
         <Item label="Name">{lead.personName}</Item>
         <Item label="Mobile">{lead.mobileNo}</Item>
         <Item label="Email">{lead.emailId}</Item>
@@ -33,8 +42,8 @@ export default async function LeadViewPage({ params }) {
       </LeadSection>
 
       {/* Company Info */}
-      <LeadSection title="🏢 Company Info">
-        <Item label="Name">{lead.companyName}</Item>
+      <LeadSection icon={<Building2 className="h-4 w-4" />} title="Company Information">
+        <Item label="Company Name">{lead.companyName}</Item>
         <Item label="Contact">{lead.companyContact}</Item>
         <Item label="Email">{lead.companyEmail}</Item>
         <Item label="Website">{lead.companyWebsite}</Item>
@@ -47,17 +56,16 @@ export default async function LeadViewPage({ params }) {
       </LeadSection>
 
       {/* Lead Source Info */}
-      <LeadSection title="📢 Lead Origin">
-        <Item label="Source">{lead.leadSource}</Item>
+      <LeadSection icon={<Megaphone className="h-4 w-4" />} title="Lead Source & Reference">
+        <Item label="Lead Source">{lead.leadSource}</Item>
         <Item label="Reference For Lead">{lead.referenceForLead}</Item>
         <Item label="Type of Lead">{lead.typeOfLead}</Item>
-        <Item label="Lead Detail">{lead.leadDetails}</Item>
+        <Item label="Lead Details">{lead.leadDetails}</Item>
       </LeadSection>
 
-      {/* Project Details */}
-      <LeadSection title="📁 Project & Status Info">
+      {/* Lead Progress Info */}
+      <LeadSection icon={<FolderKanban className="h-4 w-4" />} title="Project & Status">
         <Item label="Enquiry Type">{lead.enquiryType}</Item>
-        <Item label="Project Type">{lead.projectType}</Item>
         <Item label="Action">{lead.action}</Item>
         <Item label="Lead Status">{lead.status}</Item>
         <Item label="Lead Date">
@@ -66,17 +74,13 @@ export default async function LeadViewPage({ params }) {
         <Item label="Quote Due Date">
           {lead.quoteDate ? new Date(lead.quoteDate).toLocaleDateString() : "—"}
         </Item>
-      </LeadSection>
-
-      {/* Completion */}
-      <LeadSection title="✅ Completion Details">
         <Item label="Job Main Category">{lead.jobMainCategory}</Item>
         <Item label="Job Sub Category">{lead.jobSubCategory}</Item>
-        <Item label="Message" className="md:col-span-2">{lead.leadMessage}</Item>
+        <Item label="Lead Message" className="md:col-span-2">{lead.leadMessage}</Item>
       </LeadSection>
 
-      {/* Meta */}
-      <LeadSection title="🗓️ Meta Info">
+      {/* Timestamps */}
+      <LeadSection icon={<CalendarClock className="h-4 w-4" />} title="Meta Information">
         <Item label="Created At">{new Date(lead.createdAt).toLocaleString()}</Item>
         <Item label="Updated At">{new Date(lead.updatedAt).toLocaleString()}</Item>
       </LeadSection>
@@ -85,11 +89,12 @@ export default async function LeadViewPage({ params }) {
 }
 
 /* ---------- Layout Components ---------- */
-function LeadSection({ title, children }) {
+function LeadSection({ title, icon, children }) {
   return (
     <Card className="border-muted bg-white dark:bg-zinc-900 shadow-sm">
-      <CardHeader className="pb-2 border-b border-border">
-        <CardTitle className="text-base text-muted-foreground dark:text-zinc-300">
+      <CardHeader className="pb-2 border-b border-border flex items-center gap-2">
+        {icon}
+        <CardTitle className="text-base font-semibold text-muted-foreground dark:text-zinc-300">
           {title}
         </CardTitle>
       </CardHeader>

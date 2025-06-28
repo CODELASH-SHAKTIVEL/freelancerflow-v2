@@ -313,62 +313,7 @@ enum LeadStatus {
   POSTPONED
 }
 
-model Lead {
-  id               String         @id @default(cuid())
-  userId           String
-  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Journey Stage
-  journeyStage     JourneyStage   @default(LEAD)
-
-  // Client Info
-  personName       String?
-  mobileNo         String?
-  emailId          String?
-  capacity         String?        // Personal / Official
-  address          String?
-  pinCode          String?
-  state            String?
-  country          String?
-  designation      String?
-  department       String?
-  clientType       String?
-
-  // Company Info
-  companyName      String?
-  companyContact   String?
-  companyEmail     String?
-  companyWebsite   String?
-  companyAddress   String?
-  companyPinCode   String?
-  companyState     String?
-  companyCountry   String?
-  companyType      String?
-  previouslyWorked Boolean?
-  companyProfession String?
-
-  // Lead Source Info
-  leadSource       LeadSource?
-  referenceForLead ReferenceForLead?
-
-  // Lead Details
-  typeOfLead       TypeOfLead?
-  leadDetails      LeadDetails?
-  enquiryType      EnquiryType?
-  action           ActionOnLead?
-  status           LeadStatus?
-
-  leadDate         DateTime?
-  quoteDate        DateTime?
-
-  // Optional Info
-  jobMainCategory  String?
-  jobSubCategory   String?
-  leadMessage      String?
-
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-}
 
 model Profile {
   id                  String     @id @default(cuid())
@@ -458,14 +403,38 @@ model Project {
   name           String
   key            String
   description    String?
+
   organizationId String    // This will store the Clerk organization ID
+
+  duration       Int?       // Estimated duration in days
+  deadline       DateTime?  // Project delivery deadline
+  projectScope   String?    // High-level summary of the project scope
+  priority       ProjectPriority @default(medium) // Priority of the project
+  status         ProjectStatus   @default(active) // Project current state
+
   sprints        Sprint[]
   issues         Issue[]
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   @@unique([organizationId, key])
 }
+
+enum ProjectStatus {
+  active
+  completed
+  on_hold
+  cancelled
+}
+
+enum ProjectPriority {
+  low
+  medium
+  high
+  urgent
+}
+
 
 model Sprint {
   id        String   @id @default(cuid())
@@ -536,3 +505,99 @@ enum IssuePriority {
   URGENT
 }
 
+model Lead {
+  id               String         @id @default(cuid())
+  userId           String
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Journey Stage
+  journeyStage     JourneyStage   @default(LEAD)
+
+  // Client Info
+  personName       String?
+  mobileNo         String?
+  emailId          String?
+  capacity         String?        // Personal / Official
+  address          String?
+  pinCode          String?
+  state            String?
+  country          String?
+  designation      String?
+  department       String?
+  clientType       String?
+
+  // Company Info
+  companyName      String?
+  companyContact   String?
+  companyEmail     String?
+  companyWebsite   String?
+  companyAddress   String?
+  companyPinCode   String?
+  companyState     String?
+  companyCountry   String?
+  companyType      String?
+  previouslyWorked Boolean?
+  companyProfession String?
+
+  // Lead Source Info
+  leadSource       LeadSource?
+  referenceForLead ReferenceForLead?
+
+  // Lead Details
+  typeOfLead       TypeOfLead?
+  leadDetails      LeadDetails?
+  enquiryType      EnquiryType?
+  action           ActionOnLead?
+  status           LeadStatus?
+
+  leadDate         DateTime?
+  quoteDate        DateTime?
+
+  // Optional Info
+  jobMainCategory  String?
+  jobSubCategory   String?
+  leadMessage      String?
+
+  // CRM Relations (added only for relational access)
+  crmNotes         CrmNote[]
+  crmFollowUps     CrmFollowUp[]
+  crmTags          CrmTag[]
+  crmStatus        CrmStatus?  
+
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+}
+
+model CrmNote {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model CrmFollowUp {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  title     String
+  dueDate   DateTime
+  status    String   @default("pending") // "pending", "done"
+  createdAt DateTime @default(now())
+}
+
+model CrmTag {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime @default(now())
+}
+
+model CrmStatus {
+  id        String   @id @default(cuid())
+  leadId    String   @unique
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  value     String   // e.g., "To Contact", "In Progress", etc.
+  updatedAt DateTime @updatedAt
+}

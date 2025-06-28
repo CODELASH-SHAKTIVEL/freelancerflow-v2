@@ -2,8 +2,11 @@ import { db } from "@/lib/prisma";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 
-const page = async ({ }) => {
-    const { userId } = await auth();
+// ⬅️ Ensure this page is dynamic
+export const dynamic = "force-dynamic";
+
+const page = async () => {
+  const { userId } = await auth();
 
     if (!userId) {
         throw new Error("User not found");

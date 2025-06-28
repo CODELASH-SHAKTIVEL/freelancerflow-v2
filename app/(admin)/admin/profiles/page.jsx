@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
 import { getAllUsersWithProfiles } from "@/actions/admin.profile";
-import { Download } from "lucide-react";
+import { Download, User, Phone, BadgeCheck, GraduationCap, BookText } from "lucide-react";
 import jsPDF from "jspdf";
 
 export default function AdminProfilePage() {
@@ -40,21 +40,66 @@ export default function AdminProfilePage() {
     doc.setFontSize(16);
     doc.text("User Profile", 20, 20);
 
-    const fields = {
-      Name: profile.user?.name,
-      Email: profile.user?.email,
-      "Primary Mobile": profile.primaryMobileNo,
-      State: profile.state,
-      Experience: profile.totalExperienceYears
-        ? `${profile.totalExperienceYears} yrs`
-        : "-",
-      "Employment Type": profile.employmentType ?? "-",
+    const sections = {
+      "Contact Info": {
+        Name: profile.user?.name,
+        Email: profile.user?.email,
+        "Primary Mobile": profile.primaryMobileNo,
+        "Secondary Mobile": profile.secondaryMobileNo,
+        "Personal Email": profile.personalEmail,
+        "Work Email": profile.workEmail,
+        Website: profile.website,
+        Address: profile.address,
+        State: profile.state,
+        "Pin Code": profile.pinCode,
+      },
+      "Basic Details": {
+        Gender: profile.gender,
+        "Date of Birth": new Date(profile.dateOfBirth).toLocaleDateString(),
+        Profession: profile.profession?.name,
+        Experience: profile.totalExperienceYears ? `${profile.totalExperienceYears} yrs` : "-",
+        "Employment Type": profile.employmentType,
+        Companies: profile.companies,
+        "Freelancing Works": profile.freelancingWorks,
+        "Job Description": profile.jobDescriptions,
+      },
+      "Education": {
+        "10th Institution": profile.xInstitution,
+        "10th Board": profile.xBoard,
+        "10th Passing Year": profile.xPassingYear,
+        "12th Institution": profile.xiiInstitution,
+        "12th Board": profile.xiiBoard,
+        "12th Passing Year": profile.xiiPassingYear,
+        "Formal Degree": profile.formalDegree,
+        "Formal Institution": profile.formalInstitution,
+        "Formal University": profile.formalUniversity,
+        "Formal Passing Year": profile.formalPassingYear,
+        "Professional Course": profile.professionalCourse,
+        "Professional Institution": profile.professionalInstitution,
+        "Professional University": profile.professionalUniversity,
+        "Professional Passing Year": profile.professionalPassingYear,
+      },
+      Certifications: {
+        "Figma Certified": profile.figmaCertified ? "Yes" : "No",
+        "React Certified": profile.reactJsCertified ? "Yes" : "No",
+      },
     };
 
-    let y = 40;
-    Object.entries(fields).forEach(([label, value]) => {
-      doc.text(`${label}: ${value}`, 20, y);
-      y += 10;
+    let y = 30;
+    Object.entries(sections).forEach(([section, fields]) => {
+      doc.setFontSize(14);
+      doc.text(section, 20, y);
+      y += 8;
+      doc.setFontSize(12);
+      Object.entries(fields).forEach(([label, value]) => {
+        doc.text(`${label}: ${value || "-"}`, 25, y);
+        y += 7;
+        if (y > 280) {
+          doc.addPage();
+          y = 20;
+        }
+      });
+      y += 5;
     });
 
     doc.save(`${profile.user?.name || "profile"}.pdf`);
@@ -62,7 +107,6 @@ export default function AdminProfilePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Heading */}
       <div className="flex flex-col gap-1">
         <h2 className="text-2xl font-semibold tracking-tight">User Profiles</h2>
         <p className="text-muted-foreground">
@@ -70,7 +114,6 @@ export default function AdminProfilePage() {
         </p>
       </div>
 
-      {/* Search input */}
       <div className="flex items-center max-w-md">
         <Input
           placeholder="Search name, email or mobile..."
@@ -79,10 +122,9 @@ export default function AdminProfilePage() {
         />
       </div>
 
-      {/* Table */}
-      <Card>
+      <Card className="overflow-x-auto">
         <CardContent className="p-0">
-          <Table>
+          <Table className="min-w-[1000px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -117,77 +159,27 @@ export default function AdminProfilePage() {
                         <DialogTrigger asChild>
                           <Button
                             size="sm"
-                            onClick={() =>
-                              setSelectedProfile({ ...user.profile, user })
-                            }
+                            onClick={() => setSelectedProfile({ ...user.profile, user })}
                           >
                             View
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
                           <DialogHeader>
-                            <DialogTitle>Profile Details</DialogTitle>
+                            <DialogTitle className="text-2xl flex items-center gap-2">
+                              <User className="w-5 h-5" /> Profile Details
+                            </DialogTitle>
                           </DialogHeader>
-                          <div className="space-y-3 text-sm">
-                            <Detail label="Name" value={selectedProfile?.user?.name} />
-                            <Detail label="Email" value={selectedProfile?.user?.email} />
-                            <Detail
-                              label="Primary Mobile"
-                              value={selectedProfile?.primaryMobileNo}
-                            />
-                            <Detail
-                              label="Secondary Mobile"
-                              value={selectedProfile?.secondaryMobileNo}
-                            />
-                            <Detail
-                              label="Personal Email"
-                              value={selectedProfile?.personalEmail}
-                            />
-                            <Detail
-                              label="Work Email"
-                              value={selectedProfile?.workEmail}
-                            />
-                            <Detail
-                              label="Address"
-                              value={selectedProfile?.address}
-                            />
-                            <Detail label="State" value={selectedProfile?.state} />
-                            <Detail label="Gender" value={selectedProfile?.gender} />
-                            <Detail
-                              label="Experience"
-                              value={
-                                selectedProfile?.totalExperienceYears
-                                  ? `${selectedProfile.totalExperienceYears} yrs`
-                                  : "-"
-                              }
-                            />
-                            <Detail
-                              label="Employment Type"
-                              value={selectedProfile?.employmentType}
-                            />
-                            <Detail
-                              label="Companies"
-                              value={selectedProfile?.companies}
-                            />
-                            <Detail
-                              label="Freelancing"
-                              value={selectedProfile?.freelancingWorks}
-                            />
-                            <Detail
-                              label="Figma Certified"
-                              value={selectedProfile?.figmaCertified ? "Yes" : "No"}
-                            />
-                            <Detail
-                              label="React Certified"
-                              value={selectedProfile?.reactJsCertified ? "Yes" : "No"}
-                            />
+
+                          <ProfileSections profile={selectedProfile} />
+
+                          <div className="pt-4">
                             <Button
                               variant="outline"
-                              className="mt-4"
                               onClick={() => handleDownloadPDF(selectedProfile)}
+                              className="w-full"
                             >
-                              <Download className="w-4 h-4 mr-2" />
-                              Download PDF
+                              <Download className="w-4 h-4 mr-2" /> Download Profile as PDF
                             </Button>
                           </div>
                         </DialogContent>
@@ -204,11 +196,86 @@ export default function AdminProfilePage() {
   );
 }
 
-// 🔹 Small helper component for cleaner detail rendering
 function Detail({ label, value }) {
   return (
-    <p>
-      <strong>{label}:</strong> {value || "-"}
+    <p className="text-sm text-muted-foreground">
+      <span className="font-medium text-foreground">{label}:</span>{" "}
+      {value || "-"}
     </p>
+  );
+}
+
+function Section({ title, icon, children }) {
+  return (
+    <div className="mb-6">
+      <div className="flex items-center gap-2 mb-2">
+        {icon}
+        <h3 className="text-lg font-semibold">{title}</h3>
+      </div>
+      <div className="bg-muted/30 dark:bg-muted/10 rounded-lg p-4 space-y-2">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function ProfileSections({ profile }) {
+  if (!profile) return null;
+  return (
+    <>
+      <Section title="Contact Information" icon={<Phone className="w-4 h-4" />}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <Detail label="Name" value={profile.user?.name} />
+          <Detail label="Email" value={profile.user?.email} />
+          <Detail label="Primary Mobile" value={profile.primaryMobileNo} />
+          <Detail label="Secondary Mobile" value={profile.secondaryMobileNo} />
+          <Detail label="Personal Email" value={profile.personalEmail} />
+          <Detail label="Work Email" value={profile.workEmail} />
+          <Detail label="Website" value={profile.website} />
+          <Detail label="Address" value={profile.address} />
+          <Detail label="State" value={profile.state} />
+          <Detail label="Pin Code" value={profile.pinCode} />
+        </div>
+      </Section>
+
+      <Section title="Basic Details" icon={<BadgeCheck className="w-4 h-4" />}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <Detail label="Gender" value={profile.gender} />
+          <Detail label="Date of Birth" value={new Date(profile.dateOfBirth).toLocaleDateString()} />
+          <Detail label="Profession" value={profile.profession?.name} />
+          <Detail label="Experience" value={profile.totalExperienceYears ? `${profile.totalExperienceYears} yrs` : "-"} />
+          <Detail label="Employment Type" value={profile.employmentType} />
+          <Detail label="Companies" value={profile.companies} />
+          <Detail label="Freelancing Works" value={profile.freelancingWorks} />
+          <Detail label="Job Description" value={profile.jobDescriptions} />
+        </div>
+      </Section>
+
+      <Section title="Education" icon={<GraduationCap className="w-4 h-4" />}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <Detail label="10th Institution" value={profile.xInstitution} />
+          <Detail label="10th Board" value={profile.xBoard} />
+          <Detail label="10th Passing Year" value={profile.xPassingYear} />
+          <Detail label="12th Institution" value={profile.xiiInstitution} />
+          <Detail label="12th Board" value={profile.xiiBoard} />
+          <Detail label="12th Passing Year" value={profile.xiiPassingYear} />
+          <Detail label="Formal Degree" value={profile.formalDegree} />
+          <Detail label="Formal Institution" value={profile.formalInstitution} />
+          <Detail label="Formal University" value={profile.formalUniversity} />
+          <Detail label="Formal Passing Year" value={profile.formalPassingYear} />
+          <Detail label="Professional Course" value={profile.professionalCourse} />
+          <Detail label="Professional Institution" value={profile.professionalInstitution} />
+          <Detail label="Professional University" value={profile.professionalUniversity} />
+          <Detail label="Professional Passing Year" value={profile.professionalPassingYear} />
+        </div>
+      </Section>
+
+      <Section title="Certifications" icon={<BookText className="w-4 h-4" />}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <Detail label="Figma Certified" value={profile.figmaCertified ? "Yes" : "No"} />
+          <Detail label="React Certified" value={profile.reactJsCertified ? "Yes" : "No"} />
+        </div>
+      </Section>
+    </>
   );
 }

@@ -36,7 +36,7 @@ const OrgSwitcher = () => {
             elements: {
               organizationSwitcherTrigger:
                 "border border-white-300 text-white rounded-md px-5 py-2",
-              organizationSwitcherTriggerIcon: "text-gray-500",
+              organizationSwitcherTriggerIcon: "text-white-500",
             },
           }}
         />

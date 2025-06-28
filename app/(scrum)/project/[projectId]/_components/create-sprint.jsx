@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,11 +9,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Card, CardContent } from "@/components/ui/card";
-
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, ListPlus, Settings2, X } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import { format, addDays } from "date-fns";
 
@@ -35,8 +33,7 @@ export default function SprintCreationForm({
   });
   const router = useRouter();
 
-  const { loading: createSprintLoading, fn: createSprintFn } =
-    useFetch(createSprint);
+  const { loading: createSprintLoading, fn: createSprintFn } = useFetch(createSprint);
 
   const {
     register,
@@ -59,42 +56,44 @@ export default function SprintCreationForm({
       endDate: dateRange.to,
     });
     setShowForm(false);
-    router.refresh(); // Refresh the page to show updated data
+    router.refresh();
   };
 
   return (
-    <>
-      <div className="flex justify-between">
-        <h1 className="text-5xl font-bold mb-8 gradient-title">
-          {projectTitle}
-        </h1>
+    <div className="w-full space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+            <Settings2 className="w-6 h-6" /> {projectTitle}
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Manage and create new sprints for your project.
+          </p>
+        </div>
         <Button
-          className="mt-2"
           onClick={() => setShowForm(!showForm)}
           variant={!showForm ? "default" : "destructive"}
         >
+          {!showForm ? <ListPlus className="mr-2 h-4 w-4" /> : <X className="mr-2 h-4 w-4" />}
           {!showForm ? "Create New Sprint" : "Cancel"}
         </Button>
       </div>
+
       {showForm && (
-        <Card className="pt-4 mb-4">
-          <CardContent>
+        <Card className="bg-muted/30 dark:bg-muted/10 border rounded-lg">
+          <CardContent className="p-6">
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="flex gap-4 items-end"
+              className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end"
             >
-              <div className="flex-1">
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium mb-1"
-                >
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium mb-2">
                   Sprint Name
                 </label>
                 <Input
                   id="name"
                   {...register("name")}
                   readOnly
-                  className="bg-slate-950"
                 />
                 {errors.name && (
                   <p className="text-red-500 text-sm mt-1">
@@ -102,10 +101,9 @@ export default function SprintCreationForm({
                   </p>
                 )}
               </div>
-              <div className="flex-1">
-                <label className="block text-sm font-medium mb-1">
-                  Sprint Duration
-                </label>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Sprint Duration</label>
                 <Controller
                   control={control}
                   name="dateRange"
@@ -114,32 +112,22 @@ export default function SprintCreationForm({
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className={`w-full justify-start text-left font-normal bg-slate-950 ${
-                            !dateRange && "text-muted-foreground"
-                          }`}
+                          className="w-full justify-start text-left font-normal"
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {dateRange.from && dateRange.to ? (
-                            format(dateRange.from, "LLL dd, y") +
-                            " - " +
-                            format(dateRange.to, "LLL dd, y")
+                            `${format(dateRange.from, "LLL dd, y")} - ${format(dateRange.to, "LLL dd, y")}`
                           ) : (
                             <span>Pick a date</span>
                           )}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto bg-slate-900"
-                        align="start"
-                      >
+                      <PopoverContent className="w-auto p-2" align="start">
                         <DayPicker
                           classNames={{
-                            chevron: "fill-blue-500",
-                            range_start: "bg-blue-700",
-                            range_end: "bg-blue-700",
-                            range_middle: "bg-blue-400",
-                            day_button: "border-none",
-                            today: "border-2 border-blue-700",
+                            range_start: "bg-primary text-white",
+                            range_end: "bg-primary text-white",
+                            range_middle: "bg-primary/20",
                           }}
                           mode="range"
                           disabled={[{ before: new Date() }]}
@@ -156,13 +144,18 @@ export default function SprintCreationForm({
                   )}
                 />
               </div>
-              <Button type="submit" disabled={createSprintLoading}>
+
+              <Button
+                type="submit"
+                disabled={createSprintLoading}
+                className="w-full md:w-auto"
+              >
                 {createSprintLoading ? "Creating..." : "Create Sprint"}
               </Button>
             </form>
           </CardContent>
         </Card>
       )}
-    </>
+    </div>
   );
 }

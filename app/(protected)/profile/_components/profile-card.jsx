@@ -2,30 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import { getProfile } from "@/actions/profile";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Phone,
-  Mail,
-  Globe,
-  MapPin,
-  Landmark,
-  GraduationCap,
-  User,
-  Calendar,
-  Wrench,
-  Briefcase,
-  Building,
-  BadgeCheck,
-  BookOpen,
-  FileText,
-  Hammer,
-  Laptop2,
-  Award,
-  Loader2,
-  Paperclip,
-} from "lucide-react";
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Phone, Mail, Globe, MapPin, Landmark, GraduationCap, User, Calendar, Wrench, Briefcase, FileText, Hammer, Laptop2, Paperclip } from "lucide-react";
 
 export const ProfileCard = () => {
   const [profile, setProfile] = useState(null);
@@ -114,18 +98,17 @@ export const ProfileCard = () => {
     if (!files || files.length === 0) return null;
     return (
       <div className="space-y-1">
-        <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
-          <Paperclip className="w-4 h-4" />
-          {title}
+        <h4 className="text-base font-semibold text-primary flex items-center gap-2">
+          <Paperclip className="w-4 h-4" /> {title}
         </h4>
-        <ul className="list-disc list-inside text-sm">
+        <ul className="list-disc list-inside text-sm pl-4">
           {files.map((file, i) => (
             <li key={i}>
               <a
                 href={file.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary underline hover:text-primary/80"
+                className="text-blue-600 hover:underline dark:text-blue-400"
               >
                 {file.name || `Attachment ${i + 1}`}
               </a>
@@ -137,18 +120,25 @@ export const ProfileCard = () => {
   };
 
   return (
-    <Card className="w-full shadow-sm border border-border bg-background text-foreground">
-      <CardContent className="p-6 space-y-6 text-sm">
-        <div className="flex items-center gap-3">
-          <User className="w-6 h-6" />
-          <h2 className="text-xl font-semibold">{name}</h2>
-        </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <Card className="border shadow-lg">
+      <CardHeader className="bg-gradient-to-r from-muted to-primary text-foreground dark:from-muted dark:to-primary dark:text-foreground rounded-t-md">
+  <CardTitle className="flex items-center gap-3 text-xl">
+    <User className="w-6 h-6 text-inherit" /> {name}
+  </CardTitle>
+</CardHeader>
+      </Card>
 
-        <section className="space-y-2">
-          <h3 className="flex items-center gap-2 font-medium">
-            <Landmark className="w-4 h-4" /> Personal Information
-          </h3>
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      {/* Personal Info */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Landmark className="w-5 h-5 text-primary" /> Personal Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-y-3">
             <li className="flex items-center gap-2"><Phone className="w-4 h-4" /> {primaryMobileNo}</li>
             {secondaryMobileNo && <li className="flex items-center gap-2"><Phone className="w-4 h-4" /> {secondaryMobileNo}</li>}
             <li className="flex items-center gap-2"><Mail className="w-4 h-4" /> {personalEmail}</li>
@@ -158,25 +148,35 @@ export const ProfileCard = () => {
             <li className="flex items-center gap-2"><User className="w-4 h-4" /> {gender}</li>
             <li className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {dateOfBirth ? new Date(dateOfBirth).toLocaleDateString() : "-"}</li>
           </ul>
-        </section>
+        </CardContent>
+      </Card>
 
-        <section className="space-y-2">
-          <h3 className="flex items-center gap-2 font-medium">
-            <GraduationCap className="w-4 h-4" /> Education
-          </h3>
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      {/* Education */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <GraduationCap className="w-5 h-5 text-primary" /> Education
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2 text-sm">
             <li><strong>10th:</strong> {xInstitution} ({xBoard}, {xPassingYear})</li>
             <li><strong>12th:</strong> {xiiInstitution} ({xiiBoard}, {xiiPassingYear})</li>
             <li><strong>Formal:</strong> {formalDegree} at {formalInstitution} ({formalUniversity}, {formalPassingYear})</li>
             <li><strong>Professional:</strong> {professionalCourse} at {professionalInstitution} ({professionalUniversity}, {professionalPassingYear})</li>
           </ul>
-        </section>
+        </CardContent>
+      </Card>
 
-        <section className="space-y-2">
-          <h3 className="flex items-center gap-2 font-medium">
-            <Hammer className="w-4 h-4" /> Profession & Tools
-          </h3>
-          <p className="flex items-center gap-2">
+      {/* Profession */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Hammer className="w-5 h-5 text-primary" /> Profession & Tools
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="flex items-center gap-2 mb-2">
             <Briefcase className="w-4 h-4" /> <strong>Profession:</strong> {profession?.name ?? "-"}
           </p>
           <div className="flex flex-wrap gap-2">
@@ -190,25 +190,35 @@ export const ProfileCard = () => {
               <span className="text-muted-foreground">No tools listed</span>
             )}
           </div>
-        </section>
+        </CardContent>
+      </Card>
 
-        <section className="space-y-2">
-          <h3 className="flex items-center gap-2 font-medium">
-            <Laptop2 className="w-4 h-4" /> Work Experience
-          </h3>
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      {/* Work Experience */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Laptop2 className="w-5 h-5 text-primary" /> Work Experience
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             <li><strong>Total Experience:</strong> {totalExperienceYears ?? "-"} years</li>
             <li><strong>Employment Type:</strong> {employmentType ?? "-"}</li>
             <li><strong>Companies:</strong> {companies ?? "-"}</li>
             <li><strong>Freelancing Works:</strong> {freelancingWorks ?? "-"}</li>
             <li className="md:col-span-2"><strong>Job Descriptions:</strong><br />{jobDescriptions ?? "-"}</li>
           </ul>
-        </section>
+        </CardContent>
+      </Card>
 
-        <section className="space-y-4">
-          <h3 className="flex items-center gap-2 font-medium">
-            <FileText className="w-4 h-4" /> Attachments
-          </h3>
+      {/* Attachments */}
+      {/* <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <FileText className="w-5 h-5 text-primary" /> Attachments
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {renderAttachments("Resumes", resumes)}
             {renderAttachments("CVs", cvs)}
@@ -224,8 +234,8 @@ export const ProfileCard = () => {
             {renderAttachments("Experience Certificates", experienceCertificates)}
             {renderAttachments("Internship Certificates", internshipCertificates)}
           </div>
-        </section>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card> */}
+    </div>
   );
 };

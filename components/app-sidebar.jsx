@@ -56,8 +56,13 @@ const data = {
       icon: IconUsers,
     },
     {
+      title: "CRM",
+      url: "/crm",
+      icon:IconFileWord,
+    },
+    {
       title: "Invoices",
-      url: "/invoices",
+      url: "/invoicess",
       icon: IconFolder,
     },
     {

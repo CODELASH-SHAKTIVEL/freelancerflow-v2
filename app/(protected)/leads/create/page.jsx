@@ -1,17 +1,24 @@
-// app/(protected)/leads/create/page.jsx
+// app/(protected)/leads/create/page.tsx
 
-// "use client";
 import React from "react";
-import { LeadForm } from "../_components/leads-form"; // path may vary
-export default async function CreateLeadPage({ searchParams }) {
+import { LeadForm } from "../_components/leads-form";
+import { FilePlus2 } from "lucide-react";
+
+export default function CreateLeadPage() {
   return (
-    <div className="max-w-4xl mx-auto px-5">
-      <div className="flex justify-center md:justify-normal mb-8">
-        <h1 className="text-5xl gradient-title">
-           Create Lead
+    <section className="w-full px-6 py-6 space-y-6">
+      {/* Page Header with Icon */}
+      <div className="flex items-center gap-3">
+        <FilePlus2 className="h-6 w-6 text-primary" />
+        <h1 className="text-3xl font-bold text-foreground dark:text-white tracking-tight">
+          Create Lead
         </h1>
       </div>
-      <LeadForm/>
-    </div>
+
+      {/* Full-width form */}
+      <div className="w-full bg-white dark:bg-zinc-900 border border-border rounded-xl shadow-sm p-4 md:p-6">
+        <LeadForm />
+      </div>
+    </section>
   );
 }

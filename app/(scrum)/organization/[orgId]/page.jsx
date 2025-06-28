@@ -5,12 +5,17 @@ import OrgSwitcher from "@/components/org-switcher";
 import ProjectList from "./_components/project-list";
 import UserIssues from "./_components/user-issues";
 
+// ⬇️ Forces dynamic rendering (no caching)
+export const dynamic = "force-dynamic";
+
 export default async function OrganizationPage({ params }) {
   const { orgId } = params;
   const { userId } = await auth();
+
   console.log("Organization Page Rendered", orgId, userId);
+
   if (!userId) {
-    redirect("https://assuring-man-63.accounts.dev/sign-in");
+    return redirect("/sign-in"); // Or your custom sign-in URL
   }
 
   const organization = await getOrganization(orgId);
@@ -26,7 +31,6 @@ export default async function OrganizationPage({ params }) {
         <h1 className="text-5xl font-bold gradient-title pb-2">
           {organization.name}&rsquo;s Projects
         </h1>
-
         <OrgSwitcher />
       </div>
       <div className="mb-4">
@@ -38,11 +42,3 @@ export default async function OrganizationPage({ params }) {
     </div>
   );
 }
-
-
-// import React from "react";
-// const Organization = ({ params }) => {
-//   const { orgId : id } =  params ;
-//   return <div>orgId :{id}</div>;
-// };
-// export default Organization;

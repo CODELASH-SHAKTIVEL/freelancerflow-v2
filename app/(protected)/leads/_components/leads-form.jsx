@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { createLead } from "@/actions/leads";
-import { Loader2 } from "lucide-react";
+import { Loader2, User, Building2, Phone, Mail, MapPin, Briefcase, Info, Calendar, ClipboardCheck, ShieldCheck } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,69 +78,171 @@ export function LeadForm() {
   };
 
   return (
-    <form
+   <form
       onSubmit={handleSubmit(onSubmit)}
-      className="max-w-5xl mx-auto p-6 space-y-6 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 shadow-md rounded-xl"
+      className="w-full px-4 md:px-6 py-8 space-y-10 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 shadow-md rounded-xl"
     >
-      <div className="grid md:grid-cols-2 gap-4">
-        <StyledInput placeholder="Person Name" {...register("personName")} />
-        <StyledInput placeholder="Mobile No" {...register("mobileNo")} />
-        <StyledInput placeholder="Email" {...register("emailId")} />
-        <StyledInput placeholder="Address" {...register("address")} />
-        <StyledInput placeholder="Pin Code" {...register("pinCode")} />
-        <StyledInput placeholder="State" {...register("state")} />
-        <StyledInput placeholder="Country" {...register("country")} />
-        <StyledInput placeholder="Designation" {...register("designation")} />
-        <StyledInput placeholder="Department" {...register("department")} />
-        <StyledSelect options={CAPACITIES} placeholder="Capacity" onChange={(v) => setValue("capacity", v)} />
-        <StyledInput placeholder="Client Type" {...register("clientType")} />
+      {/* Contact Person Section */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
+          <User className="h-5 w-5" />
+          Contact Person Details
+        </h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Input placeholder="Person Name" {...register("personName")} />
+          <Input placeholder="Mobile No" {...register("mobileNo")} />
+          <Input placeholder="Email" {...register("emailId")} />
+          <Input placeholder="Address" {...register("address")} />
+          <Input placeholder="Pin Code" {...register("pinCode")} />
+          <Input placeholder="State" {...register("state")} />
+          <Input placeholder="Country" {...register("country")} />
+          <Input placeholder="Designation" {...register("designation")} />
+          <Input placeholder="Department" {...register("department")} />
+          <Input placeholder="Client Type" {...register("clientType")} />
+        </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <StyledInput placeholder="Company Name" {...register("companyName")} />
-        <StyledInput placeholder="Company Contact" {...register("companyContact")} />
-        <StyledInput placeholder="Company Email" {...register("companyEmail")} />
-        <StyledInput placeholder="Company Website" {...register("companyWebsite")} />
-        <StyledInput placeholder="Company Address" {...register("companyAddress")} />
-        <StyledInput placeholder="Company Pin Code" {...register("companyPinCode")} />
-        <StyledInput placeholder="Company State" {...register("companyState")} />
-        <StyledInput placeholder="Company Country" {...register("companyCountry")} />
-        <StyledInput placeholder="Company Type" {...register("companyType")} />
-        <StyledInput placeholder="Company Profession" {...register("companyProfession")} />
-        <label className="flex items-center space-x-2 text-sm text-zinc-800 dark:text-zinc-200 mt-2">
-          <input type="checkbox" {...register("previouslyWorked")} />
-          <span>Previously worked with us</span>
-        </label>
+      {/* Company Section */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
+          <Building2 className="h-5 w-5" />
+          Company Details
+        </h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Input placeholder="Company Name" {...register("companyName")} />
+          <Input placeholder="Company Contact" {...register("companyContact")} />
+          <Input placeholder="Company Email" {...register("companyEmail")} />
+          <Input placeholder="Company Website" {...register("companyWebsite")} />
+          <Input placeholder="Company Address" {...register("companyAddress")} />
+          <Input placeholder="Company Pin Code" {...register("companyPinCode")} />
+          <Input placeholder="Company State" {...register("companyState")} />
+          <Input placeholder="Company Country" {...register("companyCountry")} />
+          <Input placeholder="Company Type" {...register("companyType")} />
+          <Input placeholder="Company Profession" {...register("companyProfession")} />
+          <label className="flex items-center space-x-2 text-sm text-zinc-800 dark:text-zinc-200 mt-2 col-span-full">
+            <input type="checkbox" {...register("previouslyWorked")} className="accent-primary" />
+            <span>Previously worked with us</span>
+          </label>
+        </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <StyledSelect options={LEAD_SOURCES} placeholder="Lead Source" onChange={(v) => setValue("leadSource", v)} />
-        <StyledSelect options={REFERENCE_FOR_LEADS} placeholder="Reference For Lead" onChange={(v) => setValue("referenceForLead", v)} />
-        <StyledSelect options={TYPE_OF_LEADS} placeholder="Type of Lead" onChange={(v) => setValue("typeOfLead", v)} />
-        <StyledSelect options={LEAD_DETAILS} placeholder="Lead Details" onChange={(v) => setValue("leadDetails", v)} />
-        <StyledSelect options={ENQUIRY_TYPES} placeholder="Enquiry Type" onChange={(v) => setValue("enquiryType", v)} />
-        <StyledSelect options={ACTIONS} placeholder="Action" onChange={(v) => setValue("action", v)} />
-        <StyledSelect options={STATUSES} placeholder="Status" onChange={(v) => setValue("status", v)} />
-        <StyledInput type="date" {...register("leadDate")} />
-        <StyledInput type="date" {...register("quoteDate")} />
-        <StyledInput placeholder="Job Main Category" {...register("jobMainCategory")} />
-        <StyledInput placeholder="Job Sub Category" {...register("jobSubCategory")} />
+      {/* Lead Details Section */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
+          <ClipboardCheck className="h-5 w-5" />
+          Lead Details
+        </h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Select onValueChange={(v) => setValue("capacity", v)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Capacity" />
+            </SelectTrigger>
+            <SelectContent>
+              {CAPACITIES.map((v) => (
+                <SelectItem key={v} value={v}>{v}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select onValueChange={(v) => setValue("leadSource", v)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Lead Source" />
+            </SelectTrigger>
+            <SelectContent>
+              {LEAD_SOURCES.map((v) => (
+                <SelectItem key={v} value={v}>{v}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select onValueChange={(v) => setValue("referenceForLead", v)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Reference for Lead" />
+            </SelectTrigger>
+            <SelectContent>
+              {REFERENCE_FOR_LEADS.map((v) => (
+                <SelectItem key={v} value={v}>{v}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select onValueChange={(v) => setValue("typeOfLead", v)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Type of Lead" />
+            </SelectTrigger>
+            <SelectContent>
+              {TYPE_OF_LEADS.map((v) => (
+                <SelectItem key={v} value={v}>{v}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select onValueChange={(v) => setValue("leadDetails", v)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Lead Details" />
+            </SelectTrigger>
+            <SelectContent>
+              {LEAD_DETAILS.map((v) => (
+                <SelectItem key={v} value={v}>{v}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select onValueChange={(v) => setValue("enquiryType", v)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Enquiry Type" />
+            </SelectTrigger>
+            <SelectContent>
+              {ENQUIRY_TYPES.map((v) => (
+                <SelectItem key={v} value={v}>{v}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select onValueChange={(v) => setValue("action", v)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Action" />
+            </SelectTrigger>
+            <SelectContent>
+              {ACTIONS.map((v) => (
+                <SelectItem key={v} value={v}>{v}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select onValueChange={(v) => setValue("status", v)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUSES.map((v) => (
+                <SelectItem key={v} value={v}>{v}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Input type="date" {...register("leadDate")} />
+          <Input type="date" {...register("quoteDate")} />
+          <Input placeholder="Job Main Category" {...register("jobMainCategory")} />
+          <Input placeholder="Job Sub Category" {...register("jobSubCategory")} />
+        </div>
       </div>
 
-      <Textarea
-        placeholder="Lead Message / Notes"
-        {...register("leadMessage")}
-        className="min-h-[96px] bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-gray-300 dark:border-zinc-700"
-      />
+      {/* Notes Section */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
+          <Info className="h-5 w-5" />
+          Notes
+        </h2>
+        <Textarea
+          placeholder="Lead Message / Notes"
+          {...register("leadMessage")}
+          className="min-h-[96px]"
+        />
+      </div>
 
-      <div className="flex gap-4 pt-4">
-        <Button type="button" variant="outline" onClick={() => reset()} className="w-1/2">
+      {/* Submit Section */}
+      <div className="flex flex-col md:flex-row gap-4 pt-6">
+        <Button type="button" variant="outline" onClick={() => reset()} className="w-full md:w-1/2">
           Reset
         </Button>
-        <Button type="submit" className="w-1/2" disabled={loading}>
+        <Button type="submit" className="w-full md:w-1/2" disabled={loading}>
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Lead"}
         </Button>
       </div>
     </form>
   );
 }
+ 

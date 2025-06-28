@@ -31,8 +31,25 @@ import {
 } from "@/components/ui/popover";
 import { Command, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Badge } from "@/components/ui/badge";
-import { X, ChevronDown } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  User,
+  Phone,
+  Mail,
+  Globe,
+  MapPin,
+  GraduationCap,
+  Briefcase,
+  Wrench,
+  FileText,
+  X,
+  ChevronDown,
+  Calendar,
+  Landmark,
+  School,
+} from "lucide-react";
 
+// SCHEMA (same as before)
 // Schema aligned to latest Prisma model
 const profileSchema = z.object({
   name: z.string().min(1),
@@ -81,7 +98,6 @@ export const ProfileForm = ({ mode = "create" }) => {
   const router = useRouter();
   const [professions, setProfessions] = useState([]);
   const [tools, setTools] = useState([]);
-
   const {
     register,
     handleSubmit,
@@ -91,9 +107,7 @@ export const ProfileForm = ({ mode = "create" }) => {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      gender: "MALE",
-    },
+    defaultValues: { gender: "MALE" },
   });
 
   const selectedToolIds = watch("toolIds") || [];
@@ -104,9 +118,7 @@ export const ProfileForm = ({ mode = "create" }) => {
       setProfessions(prof);
       setTools(toolList);
     }
-
     loadMeta();
-
     if (mode === "edit") {
       getProfile().then((profile) => {
         if (profile) {
@@ -137,176 +149,177 @@ export const ProfileForm = ({ mode = "create" }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-3xl">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 w-full max-w-6xl mx-auto">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl text-foreground">
+            <User className="w-5 h-5 text-primary" /> Personal Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input {...register("name")} placeholder="Full Name" />
+          <Input {...register("primaryMobileNo")} placeholder="Primary Mobile No" />
+          <Input {...register("personalEmail")} placeholder="Personal Email" />
+          <Input {...register("workEmail")} placeholder="Work Email (optional)" />
+          <Input {...register("website")} placeholder="Website (optional)" />
+          <Input {...register("address")} placeholder="Address" />
+          <Input {...register("pinCode")} placeholder="Pin Code" />
+          <Input {...register("state")} placeholder="State" />
+          <div>
+            <Label>Gender</Label>
+            <Select onValueChange={(val) => setValue("gender", val)} defaultValue="MALE">
+              <SelectTrigger><SelectValue placeholder="Select Gender" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="MALE">Male</SelectItem>
+                <SelectItem value="FEMALE">Female</SelectItem>
+                <SelectItem value="OTHER">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Input type="date" {...register("dateOfBirth")} placeholder="Date of Birth" />
+        </CardContent>
+      </Card>
 
-      {/* Personal Info */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Input {...register("name")} placeholder="Full Name" />
-        <Input {...register("primaryMobileNo")} placeholder="Primary Mobile No" />
-        <Input {...register("personalEmail")} placeholder="Personal Email" />
-        <Input {...register("workEmail")} placeholder="Work Email (optional)" />
-        <Input {...register("website")} placeholder="Website (optional)" />
-        <Input {...register("address")} placeholder="Address" />
-        <Input {...register("pinCode")} placeholder="Pin Code" />
-        <Input {...register("state")} placeholder="State" />
-        
-        <div>
-          <Label>Gender</Label>
-          <Select onValueChange={(val) => setValue("gender", val)} defaultValue="MALE">
-            <SelectTrigger>
-              <SelectValue placeholder="Select Gender" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="MALE">Male</SelectItem>
-              <SelectItem value="FEMALE">Female</SelectItem>
-              <SelectItem value="OTHER">Other</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl text-foreground">
+            <GraduationCap className="w-5 h-5 text-primary" /> Education Background
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input {...register("xInstitution")} placeholder="10th Institution" />
+          <Input {...register("xBoard")} placeholder="10th Board" />
+          <Input {...register("xPassingYear")} placeholder="10th Passing Year" type="number" />
+          <Input {...register("xiiInstitution")} placeholder="12th Institution" />
+          <Input {...register("xiiBoard")} placeholder="12th Board" />
+          <Input {...register("xiiPassingYear")} placeholder="12th Passing Year" type="number" />
+          <Input {...register("formalDegree")} placeholder="Formal Degree" />
+          <Input {...register("formalInstitution")} placeholder="Formal Institution" />
+          <Input {...register("formalUniversity")} placeholder="Formal University" />
+          <Input {...register("formalPassingYear")} placeholder="Formal Passing Year" type="number" />
+          <Input {...register("professionalCourse")} placeholder="Professional Course" />
+          <Input {...register("professionalInstitution")} placeholder="Professional Institution" />
+          <Input {...register("professionalUniversity")} placeholder="Professional University" />
+          <Input {...register("professionalPassingYear")} placeholder="Professional Passing Year" type="number" />
+        </CardContent>
+      </Card>
 
-        <Input type="date" {...register("dateOfBirth")} placeholder="Date of Birth" />
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl text-foreground">
+            <Briefcase className="w-5 h-5 text-primary" /> Work Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input {...register("totalExperienceYears")} placeholder="Total Experience (Years)" type="number" />
+          <Input {...register("companies")} placeholder="Companies (CSV)" />
+          <Input {...register("freelancingWorks")} placeholder="Freelancing Works" />
+          <div>
+            <Label>Employment Type</Label>
+            <Select onValueChange={(val) => setValue("employmentType", val)} defaultValue="">
+              <SelectTrigger><SelectValue placeholder="Select Employment Type" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="FULL_TIME">Full Time</SelectItem>
+                <SelectItem value="PART_TIME">Part Time</SelectItem>
+                <SelectItem value="FREELANCE">Freelance</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+        <CardContent>
+          <Label>Job Descriptions</Label>
+          <Textarea {...register("jobDescriptions")} placeholder="Describe roles and responsibilities..." />
+        </CardContent>
+      </Card>
 
-      {/* Education */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Input {...register("xInstitution")} placeholder="10th Institution" />
-        <Input {...register("xBoard")} placeholder="10th Board" />
-        <Input {...register("xPassingYear")} placeholder="10th Passing Year" type="number" />
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl text-foreground">
+            <Wrench className="w-5 h-5 text-primary" /> Profession & Tools
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label>Profession</Label>
+            <Select onValueChange={(val) => setValue("professionId", val)} defaultValue="">
+              <SelectTrigger><SelectValue placeholder="Select Profession" /></SelectTrigger>
+              <SelectContent>
+                {professions.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        <Input {...register("xiiInstitution")} placeholder="12th Institution" />
-        <Input {...register("xiiBoard")} placeholder="12th Board" />
-        <Input {...register("xiiPassingYear")} placeholder="12th Passing Year" type="number" />
+          <div className="space-y-2">
+            <Label>Professional Tools</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" role="combobox" className="w-full justify-between">
+                  {selectedToolIds.length > 0
+                    ? `${selectedToolIds.length} selected`
+                    : "Select tools..."}
+                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[300px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search tools..." />
+                  <CommandList>
+                    {tools.map((tool) => {
+                      const isSelected = selectedToolIds.includes(tool.id);
+                      return (
+                        <CommandItem
+                          key={tool.id}
+                          onSelect={() => {
+                            const newSelected = isSelected
+                              ? selectedToolIds.filter((id) => id !== tool.id)
+                              : [...selectedToolIds, tool.id];
+                            setValue("toolIds", newSelected);
+                          }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              readOnly
+                              className="form-checkbox"
+                            />
+                            <span>{tool.name}</span>
+                          </div>
+                        </CommandItem>
+                      );
+                    })}
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            {selectedToolIds.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {selectedToolIds.map((id) => {
+                  const tool = tools.find((t) => t.id === id);
+                  return (
+                    <Badge key={id} variant="secondary" className="flex items-center gap-1">
+                      {tool?.name}
+                      <X
+                        className="h-3 w-3 cursor-pointer"
+                        onClick={() =>
+                          setValue(
+                            "toolIds",
+                            selectedToolIds.filter((tid) => tid !== id)
+                          )
+                        }
+                      />
+                    </Badge>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
-        <Input {...register("formalDegree")} placeholder="Formal Degree" />
-        <Input {...register("formalInstitution")} placeholder="Formal Institution" />
-        <Input {...register("formalUniversity")} placeholder="Formal University" />
-        <Input {...register("formalPassingYear")} placeholder="Formal Passing Year" type="number" />
-
-        <Input {...register("professionalCourse")} placeholder="Professional Course" />
-        <Input {...register("professionalInstitution")} placeholder="Professional Institution" />
-        <Input {...register("professionalUniversity")} placeholder="Professional University" />
-        <Input {...register("professionalPassingYear")} placeholder="Professional Passing Year" type="number" />
-      </div>
-
-      {/* Profession (Dropdown) */}
-      <div>
-        <Label>Profession</Label>
-        <Select onValueChange={(val) => setValue("professionId", val)} defaultValue="">
-          <SelectTrigger>
-            <SelectValue placeholder="Select Profession" />
-          </SelectTrigger>
-          <SelectContent>
-            {professions.map((p) => (
-              <SelectItem key={p.id} value={p.id}>
-                {p.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-{/* Tools Multi-select Dropdown with Search */}
-<div className="space-y-2">
-  <Label>Professional Tools</Label>
-
-  <Popover>
-    <PopoverTrigger asChild>
-      <Button
-        variant="outline"
-        role="combobox"
-        className="w-full justify-between"
-      >
-        {selectedToolIds.length > 0
-          ? `${selectedToolIds.length} selected`
-          : "Select tools..."}
-        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-      </Button>
-    </PopoverTrigger>
-
-    <PopoverContent className="w-[300px] p-0">
-      <Command>
-        <CommandInput placeholder="Search tools..." />
-        <CommandList>
-          {tools.map((tool) => {
-            const isSelected = selectedToolIds.includes(tool.id);
-            return (
-              <CommandItem
-                key={tool.id}
-                onSelect={() => {
-                  const newSelected = isSelected
-                    ? selectedToolIds.filter((id) => id !== tool.id)
-                    : [...selectedToolIds, tool.id];
-                  setValue("toolIds", newSelected);
-                }}
-              >
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    readOnly
-                    className="form-checkbox"
-                  />
-                  <span>{tool.name}</span>
-                </div>
-              </CommandItem>
-            );
-          })}
-        </CommandList>
-      </Command>
-    </PopoverContent>
-  </Popover>
-
-  {/* Display selected tool names */}
-  {selectedToolIds.length > 0 && (
-    <div className="flex flex-wrap gap-2 mt-2">
-      {selectedToolIds.map((id) => {
-        const tool = tools.find((t) => t.id === id);
-        return (
-          <Badge key={id} variant="secondary" className="flex items-center gap-1">
-            {tool?.name}
-            <X
-              className="h-3 w-3 cursor-pointer"
-              onClick={() =>
-                setValue(
-                  "toolIds",
-                  selectedToolIds.filter((tid) => tid !== id)
-                )
-              }
-            />
-          </Badge>
-        );
-      })}
-    </div>
-  )}
-</div>
-
-      {/* Work */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Input {...register("totalExperienceYears")} placeholder="Total Experience (Years)" type="number" />
-        <Input {...register("companies")} placeholder="Companies (CSV)" />
-        <Input {...register("freelancingWorks")} placeholder="Freelancing Works" />
-
-        <div>
-          <Label>Employment Type</Label>
-          <Select onValueChange={(val) => setValue("employmentType", val)} defaultValue="">
-            <SelectTrigger>
-              <SelectValue placeholder="Select Employment Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="FULL_TIME">Full Time</SelectItem>
-              <SelectItem value="PART_TIME">Part Time</SelectItem>
-              <SelectItem value="FREELANCE">Freelance</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div>
-        <Label>Job Descriptions</Label>
-        <Textarea {...register("jobDescriptions")} placeholder="Describe roles and responsibilities..." />
-      </div>
-
-      <Button type="submit" disabled={isSubmitting}>
+      <Button type="submit" disabled={isSubmitting} className="w-full mt-6">
         {mode === "create" ? "Create Profile" : "Update Profile"}
       </Button>
     </form>

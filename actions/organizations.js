@@ -5,47 +5,52 @@ import { auth } from "@clerk/nextjs/server";
 import {clerkClient } from "@clerk/nextjs/server";
 
 export async function getOrganization(slug) {
-  const { userId } = await auth();
-  console.log("DEBUG: userId", userId);
-
-  if (!userId) throw new Error("Unauthorized");
-
-  const user = await db.user.findUnique({
-    where: { clerkUserId : userId },
-  });
-
-  if (!user) throw new Error("User not found");
-
-  // Get the organization details
-  const organization = await (await clerkClient()).organizations.getOrganization({
-    slug,
-  });
-
-  if (!organization) {
-    return null;
-  }
-
-  // Check if user belongs to this organization
-  const { data: membership } =
-    await (await clerkClient()).organizations.getInstanceOrganizationMembershipList({
-      organizationId: organization.id,
+  try {
+    const { userId } = await auth();
+    console.log("DEBUG: userId", userId);
+  
+    if (!userId) throw new Error("Unauthorized");
+  
+    const user = await db.user.findUnique({
+      where: { clerkUserId : userId },
     });
-
-
-  if (!membership || membership.length === 0) {
-    return null;
+  
+    if (!user) throw new Error("User not found");
+  
+    // Get the organization details
+    const organization = await (await clerkClient()).organizations.getOrganization({
+      slug,
+    });
+  
+    if (!organization) {
+      return null;
+    }
+  
+    // Check if user belongs to this organization
+    const { data: membership } =
+      await (await clerkClient()).organizations.getInstanceOrganizationMembershipList({
+        organizationId: organization.id,
+      });
+  
+  
+    if (!membership || membership.length === 0) {
+      return null;
+    }
+    // Find the user's membership in the organization
+    const userMembership = membership.find(
+      (member) => member.publicUserData.userId === userId
+    );
+  
+    // If user is not a member, return null
+    if (!userMembership) {
+      return null;
+    }
+  
+    return organization;
+  } catch (error) {
+    console.error("Error fetching organization:", error);
+    throw new Error("Failed to fetch organization");
   }
-  // Find the user's membership in the organization
-  const userMembership = membership.find(
-    (member) => member.publicUserData.userId === userId
-  );
-
-  // If user is not a member, return null
-  if (!userMembership) {
-    return null;
-  }
-
-  return organization;
 }
 
 

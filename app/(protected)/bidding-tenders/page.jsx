@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { Info, Upload, IndianRupee, FileText, FileCheck2 } from "lucide-react";
 
 import { getAllTenders } from "@/actions/tender";
 import { getUserBids, submitBid } from "@/actions/bid";
@@ -71,8 +72,11 @@ export default function UserBidsPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-semibold">Available Tenders</h2>
+    <section className="w-full max-w-6xl mx-auto p-6 space-y-8">
+      <div className="flex items-center gap-2">
+        <FileCheck2 className="w-6 h-6 text-primary" />
+        <h2 className="text-2xl font-semibold">Available Tenders</h2>
+      </div>
 
       <Table>
         <TableHeader>
@@ -86,13 +90,16 @@ export default function UserBidsPage() {
         <TableBody>
           {tenders.map((tender) => {
             const isSubmitted = hasBid(tender.id);
-            const isPastDeadline = tender?.deadline ? new Date(tender.deadline) < new Date() : false;
+            const isPastDeadline =
+              tender?.deadline && new Date(tender.deadline) < new Date();
 
             return (
               <TableRow key={tender.id}>
                 <TableCell className="font-medium">{tender.title}</TableCell>
                 <TableCell>
-                  {tender?.deadline ? format(new Date(tender.deadline), "PPP") : "N/A"}
+                  {tender?.deadline
+                    ? format(new Date(tender.deadline), "PPP")
+                    : "N/A"}
                 </TableCell>
                 <TableCell>
                   <Badge variant={isPastDeadline ? "destructive" : "default"}>
@@ -108,7 +115,7 @@ export default function UserBidsPage() {
                         variant="outline"
                         onClick={() => setInfoTender(tender)}
                       >
-                        Info
+                        <Info className="w-4 h-4 mr-1" /> Info
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
@@ -120,11 +127,15 @@ export default function UserBidsPage() {
                         <p><strong>Job Details:</strong> {infoTender?.jobDetails || "N/A"}</p>
                         <p>
                           <strong>RFQ Date:</strong>{" "}
-                          {infoTender?.rfqDate ? format(new Date(infoTender.rfqDate), "PPP") : "N/A"}
+                          {infoTender?.rfqDate
+                            ? format(new Date(infoTender.rfqDate), "PPP")
+                            : "N/A"}
                         </p>
                         <p>
                           <strong>Deadline:</strong>{" "}
-                          {infoTender?.deadline ? format(new Date(infoTender.deadline), "PPP") : "N/A"}
+                          {infoTender?.deadline
+                            ? format(new Date(infoTender.deadline), "PPP")
+                            : "N/A"}
                         </p>
                         {infoTender?.documentsUrl && (
                           <p>
@@ -154,13 +165,13 @@ export default function UserBidsPage() {
                             setPitchDeck(null);
                           }}
                         >
-                          Submit Bid
+                          <IndianRupee className="w-4 h-4 mr-1" /> Submit Bid
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogTitle>Submit Bid for {tender.title}</DialogTitle>
                         <div className="space-y-4 mt-4">
-                          <div>
+                          <div className="space-y-1.5">
                             <Label>Pitch Deck (PDF)</Label>
                             <Input
                               type="file"
@@ -180,7 +191,7 @@ export default function UserBidsPage() {
                               }}
                             />
                           </div>
-                          <div>
+                          <div className="space-y-1.5">
                             <Label>Bid Amount (INR)</Label>
                             <Input
                               type="number"
@@ -207,6 +218,6 @@ export default function UserBidsPage() {
           })}
         </TableBody>
       </Table>
-    </div>
+    </section>
   );
 }
